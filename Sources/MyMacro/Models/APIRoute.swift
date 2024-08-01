@@ -16,10 +16,9 @@ public extension APIRoute {
 
     var baseHeader: [String: String] { [String: String]() }
 
-    func get<T: Codable>(_ path: CNPath..., queryItems: URLQueryItem..., body: T? = nil) -> Request {
+    func get(_ path: CNPath..., queryItems: URLQueryItem...) -> Request {
         var req = Request(url: baseURL, headers: baseHeader, body: nil)
         buidPath(for: &req, .get, pahtComponent: path, queryItems: queryItems)
-        req.body = try? DictionaryEncoder.encode(body)
         return req
     }
 
