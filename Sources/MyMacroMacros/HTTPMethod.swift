@@ -17,14 +17,4 @@ public struct HTTPMethodMacro: PeerMacro {
         return .init()
     }
 
-    public enum DeclError: CustomStringConvertible, Error {
-        case onlyApplicableToEnumCase
-
-        public var description: String {
-            switch self {
-                case .onlyApplicableToEnumCase: "@HTTPMethod can only be applied to an enum case."
-            }
-        }
-    }
-
 }
