@@ -1,8 +1,15 @@
+import Foundation
 import MyMacro
+import _Concurrency
 
-let a = 17
-let b = 25
 
-let (result, code) = #stringify(a + b)
 
-print("The value \(result) was produced by the code \"\(code)\"")
+Task {
+    do {
+        try await networkManager.perform(route: AppAPI.Community.configurations)
+    } catch {
+        
+    }
+}
+
+CFRunLoopRun()
