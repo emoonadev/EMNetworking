@@ -1,19 +1,19 @@
 //
 //  RouteAPI.swift
-//  
+//
 //
 //  Created by Mickael Belhassen on 01/08/2024.
 //
 
-import SwiftCompilerPlugin
 import Foundation
+import SwiftCompilerPlugin
 import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
 public struct RouteAPI: ExtensionMacro, PeerMacro {
-    
-    public static func expansion(of node: SwiftSyntax.AttributeSyntax, providingPeersOf declaration: some SwiftSyntax.DeclSyntaxProtocol, in context: some SwiftSyntaxMacros.MacroExpansionContext) throws -> [SwiftSyntax.DeclSyntax] {
+
+    public static func expansion(of _: SwiftSyntax.AttributeSyntax, providingPeersOf _: some SwiftSyntax.DeclSyntaxProtocol, in _: some SwiftSyntaxMacros.MacroExpansionContext) throws -> [SwiftSyntax.DeclSyntax] {
         .init()
     }
 
@@ -27,26 +27,23 @@ public struct RouteAPI: ExtensionMacro, PeerMacro {
             .filter {
                 $0.attributes.first?.as(AttributeSyntax.self)?.attributeName.as(IdentifierTypeSyntax.self)?.name.text == "HTTP"
             }
-        
+
         let baseURL = attr.arguments?.as(LabeledExprListSyntax.self)?.last?.expression.as(ForceUnwrapExprSyntax.self)?.expression.as(FunctionCallExprSyntax.self)?.arguments.first?.expression.as(StringLiteralExprSyntax.self)?.segments.first?.as(StringSegmentSyntax.self)?.content.text ?? ""
         let controllerPath = attr.arguments?.as(LabeledExprListSyntax.self)?.first?.expression.as(StringLiteralExprSyntax.self)?.segments.first?.as(StringSegmentSyntax.self)?.content.text ?? ""
-        
+
+        var test: String?
         try filteredArray.forEach { caseSynt in
             let caseName = caseSynt.elements.first?.name.text ?? ""
             let methodStr = caseSynt.attributes.first?.as(AttributeSyntax.self)?.arguments?.as(LabeledExprListSyntax.self)?.first?.expression.as(MemberAccessExprSyntax.self)?.declName.baseName.text ?? ""
             let parameters = caseSynt.elements.first?.parameterClause?.parameters.compactMap { CaseMethod.Parameter(name: $0.firstName?.text, type: $0.type.as(IdentifierTypeSyntax.self)?.name.text ?? "") }
-            var path: String?
+            var path = caseSynt.attributes.first?.as(AttributeSyntax.self)?.arguments?.as(LabeledExprListSyntax.self)?.compactMap { $0.expression.description }.dropFirst().joined(separator: ",")
 
-            if caseSynt.attributes.first?.as(AttributeSyntax.self)?.arguments?.as(LabeledExprListSyntax.self)?.last?.label?.text == "path" {
-                path = caseSynt.attributes.first?.as(AttributeSyntax.self)?.arguments?.as(LabeledExprListSyntax.self)?.last?.expression.description ?? ""
-
-                if caseSynt.attributes.first?.as(AttributeSyntax.self)?.arguments?.as(LabeledExprListSyntax.self)?.last?.expression.as(FunctionCallExprSyntax.self)?.arguments.first?.expression.as(ArrayExprSyntax.self)?.elements.compactMap({ $0.expression.as(FunctionCallExprSyntax.self)?.calledExpression.as(MemberAccessExprSyntax.self)?.declName.baseName.text }).contains("parameter") == true {
-                    if let pathParameters = (caseSynt.attributes.first?.as(AttributeSyntax.self)?.arguments?.as(LabeledExprListSyntax.self)?.last?.expression.as(FunctionCallExprSyntax.self)?.arguments.first?.expression.as(ArrayExprSyntax.self)?.elements.compactMap { $0.expression.as(FunctionCallExprSyntax.self)?.arguments.first?.expression.as(StringLiteralExprSyntax.self)?.segments.first?.as(StringSegmentSyntax.self)?.content.text }), !pathParameters.isEmpty {
-                        if let caseParameters = parameters?.compactMap(\.name) {
-                            for pathParam in pathParameters {
-                                if !caseParameters.contains(pathParam) {
-                                    throw DeclError.passParamsNotMatching(caseName)
-                                }
+            if caseSynt.attributes.first?.as(AttributeSyntax.self)?.arguments?.as(LabeledExprListSyntax.self)?.last?.expression.as(FunctionCallExprSyntax.self)?.arguments.first?.expression.as(ArrayExprSyntax.self)?.elements.compactMap({ $0.expression.as(FunctionCallExprSyntax.self)?.calledExpression.as(MemberAccessExprSyntax.self)?.declName.baseName.text }).contains("parameter") == true {
+                if let pathParameters = (caseSynt.attributes.first?.as(AttributeSyntax.self)?.arguments?.as(LabeledExprListSyntax.self)?.last?.expression.as(FunctionCallExprSyntax.self)?.arguments.first?.expression.as(ArrayExprSyntax.self)?.elements.compactMap { $0.expression.as(FunctionCallExprSyntax.self)?.arguments.first?.expression.as(StringLiteralExprSyntax.self)?.segments.first?.as(StringSegmentSyntax.self)?.content.text }), !pathParameters.isEmpty {
+                    if let caseParameters = parameters?.compactMap(\.name) {
+                        for pathParam in pathParameters {
+                            if !caseParameters.contains(pathParam) {
+                                throw DeclError.passParamsNotMatching(caseName)
                             }
                         }
                     }
@@ -63,17 +60,17 @@ public struct RouteAPI: ExtensionMacro, PeerMacro {
             let regex = try! NSRegularExpression(pattern: pattern, options: [])
             let range = NSRange(input.startIndex..., in: input)
             let modifiedString = regex.stringByReplacingMatches(in: input, options: [], range: range, withTemplate: ".parameter(String(describing: $1))")
-            
+
             return modifiedString
         }
-        
+
         var requestSyntax = ""
 
         if !cases.isEmpty {
             requestSyntax.append(
                 """
                 var baseURL: URL { URL(string: \"\(baseURL + controllerPath)\")! }
-                
+
                 var request: Request {
                     switch self {
                 """
@@ -98,21 +95,21 @@ public struct RouteAPI: ExtensionMacro, PeerMacro {
                             }
                         }
                     case "get":
-                    if caseMethod.parameters.isEmpty {
-                        if let path = caseMethod.path {
-                            requestSyntax.append("case .\(caseMethod.name): get(\(transformParameterString(path)))")
+                        if caseMethod.parameters.isEmpty {
+                            if let path = caseMethod.path {
+                                requestSyntax.append("case .\(caseMethod.name): get(\(transformParameterString(path)))")
+                            } else {
+                                requestSyntax.append("case .\(caseMethod.name): get()")
+                            }
                         } else {
-                            requestSyntax.append("case .\(caseMethod.name): get()")
+                            requestSyntax.append("case let .\(caseMethod.name)(\(caseMethod.parameters.map { $0.name ?? "req" }.joined(separator: ", "))):")
+
+                            if let path = caseMethod.path {
+                                requestSyntax.append("get(\(transformParameterString(path)))")
+                            } else {
+                                requestSyntax.append("case .\(caseMethod.name): get()")
+                            }
                         }
-                    } else {
-                        requestSyntax.append("case let .\(caseMethod.name)(\(caseMethod.parameters.map { $0.name ?? "req" }.joined(separator: ", "))):")
-                        
-                        if let path = caseMethod.path {
-                            requestSyntax.append("get(\(transformParameterString(path)))")
-                        } else {
-                            requestSyntax.append("case .\(caseMethod.name): get()")
-                        }
-                    }
                     default:
                         break
                 }
@@ -129,7 +126,10 @@ public struct RouteAPI: ExtensionMacro, PeerMacro {
         return [
             try ExtensionDeclSyntax("extension \(type.trimmed): APIRoute") {
                 "\n\(raw: requestSyntax)"
-            }
+            },
+//            try ExtensionDeclSyntax("extension \(type.trimmed): APIRoute") {
+//                "\n\(raw: cases)"
+//            },
         ]
     }
 
