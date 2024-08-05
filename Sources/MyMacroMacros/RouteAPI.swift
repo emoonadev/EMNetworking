@@ -54,11 +54,11 @@ public struct RouteAPI: ExtensionMacro, PeerMacro {
             )
         }
 
-        func transformParameterString(_ input: String) -> String {
+        func transformParameterString(_ input: String, asString: Bool = false) -> String {
             let pattern = "\\.parameter\\(\"(.*?)\"\\)"
             let regex = try! NSRegularExpression(pattern: pattern, options: [])
             let range = NSRange(input.startIndex..., in: input)
-            let modifiedString = regex.stringByReplacingMatches(in: input, options: [], range: range, withTemplate: ".parameter(String(describing: $1))")
+            let modifiedString = regex.stringByReplacingMatches(in: input, options: [], range: range, withTemplate: asString ? ".parameter(\"$1\")" : ".parameter(String(describing: $1))")
 
             return modifiedString
         }
@@ -75,33 +75,34 @@ public struct RouteAPI: ExtensionMacro, PeerMacro {
                 """
             )
 
-            cases.forEach { caseMethod in
+            try cases.forEach { caseMethod in
                 switch caseMethod.method {
                     case "post", "patch", "put":
                         if caseMethod.parameters.isEmpty {
-                            if let path = caseMethod.path {
-                                requestSyntax.append("case .\(caseMethod.name): \(caseMethod.method)(\(transformParameterString(path)))")
-                            } else {
-                                requestSyntax.append("case .\(caseMethod.name): \(caseMethod.method)()")
-                            }
+                            throw DeclError.bodyParamMissingForCase(caseMethod.name)
                         } else {
-                            requestSyntax.append("case let .\(caseMethod.name)(\(caseMethod.parameters.map { $0.name ?? "req" }.joined(separator: ", "))):")
+                            let caseParams = caseMethod.parameters.map { $0.name ?? "body" }
+                            requestSyntax.append("case let .\(caseMethod.name)(\(caseParams.joined(separator: ", "))):")
 
+                            if !caseParams.contains("body") {
+                                throw DeclError.bodyParamMissingForCase(caseMethod.name)
+                            }
+                            
                             if let path = caseMethod.path {
-                                requestSyntax.append("\(caseMethod.method)(\(transformParameterString(path)), body: req)")
+                                requestSyntax.append("\(caseMethod.method)(\(transformParameterString(path)), body: body)")
                             } else {
-                                requestSyntax.append("\(caseMethod.method)(body: req)")
+                                requestSyntax.append("\(caseMethod.method)(body: body)")
                             }
                         }
                     case "get":
                         if caseMethod.parameters.isEmpty {
                             if let path = caseMethod.path {
-                                requestSyntax.append("case .\(caseMethod.name): get(\(transformParameterString(path)))")
+                                requestSyntax.append("case .\(caseMethod.name): get(\(transformParameterString(path, asString: true)))")
                             } else {
                                 requestSyntax.append("case .\(caseMethod.name): get()")
                             }
                         } else {
-                            requestSyntax.append("case let .\(caseMethod.name)(\(caseMethod.parameters.map { $0.name ?? "req" }.joined(separator: ", "))):")
+                            requestSyntax.append("case let .\(caseMethod.name)(\(caseMethod.parameters.compactMap { $0.name }.joined(separator: ", "))):")
 
                             if let path = caseMethod.path {
                                 requestSyntax.append("get(\(transformParameterString(path)))")
@@ -134,12 +135,14 @@ public struct RouteAPI: ExtensionMacro, PeerMacro {
 
     public enum DeclError: CustomStringConvertible, Error {
         case onlyApplicableToEnum
+        case bodyParamMissingForCase(String)
         case passParamsNotMatching(String)
 
         public var description: String {
             switch self {
                 case .onlyApplicableToEnum: "@HTTPMethod can only be applied to an enum."
-                case let .passParamsNotMatching(caseName): "Path parameters dosnt matches with case \(caseName) parameters"
+                case let .bodyParamMissingForCase(caseName): "Body parameter is missing for case `.\(caseName)`"
+                case let .passParamsNotMatching(caseName): "Path parameters dosnt matches with case `.\(caseName)` parameters"
             }
         }
     }

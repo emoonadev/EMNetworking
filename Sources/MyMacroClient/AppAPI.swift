@@ -25,9 +25,9 @@ enum AppAPI {
     }
     
     @RouteAPI("community/api/", baseURL: URL(string: "https://www.tinytap.com/")!)
-    enum Communityu {
+    enum EnumForDebug {
 //        @HTTP(.get, path: .parameter("id")) case configurations(id: Int)
-        @HTTP(.get, path: "configuration", "user", .parameter("id")) case configurations(id: Int)
+        @HTTP(.post, path: "configuration", "user", .parameter("id"), "test", .parameter("second")) case configurations(String, id: Int, second: Int)
     }
 }
 
