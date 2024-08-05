@@ -20,9 +20,11 @@ public enum EMConfigurator {
     }
     
     public struct Header {
+        var contentType: ContentType
         var headers: () -> [String:String]
         
-        public init(headers: @escaping () -> [String : String]) {
+        public init(contentType: ContentType, headers: @escaping () -> [String : String]) {
+            self.contentType = contentType
             self.headers = headers
         }
     }

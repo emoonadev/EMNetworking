@@ -11,30 +11,22 @@ import MyMacro
 enum AppAPI {
 
     #BaseURL("https://www.tinytap.com/") {
-        
-        @RouteAPI(.account)
+
+        @RouteAPI("account/api/")
         enum User {
-            @HTTP(.post, path: .login) case login(LoginReq)
+            @HTTP(.post, path: "login") case login(LoginReq)
         }
 
-        @RouteAPI(.community)
+        @RouteAPI("community/api/")
         enum Community {
-            @HTTP(.get, path: .configurations) case configurations
+            @HTTP(.get, path: "configurations") case configurations
         }
-        
+
     }
-    
+
     @RouteAPI("community/api/", baseURL: URL(string: "https://www.tinytap.com/")!)
     enum EnumForDebug {
 //        @HTTP(.get, path: .parameter("id")) case configurations(id: Int)
         @HTTP(.post, path: "configuration", "user", .parameter("id"), "test", .parameter("second")) case configurations(String, id: Int, second: Int)
     }
-}
-
-extension CNPath {
-    static let community: CNPath = "community/api/"
-    static let account: CNPath = "account/api/"
-    
-    static let login: CNPath = "login"
-    static let configurations: CNPath = "configurations"
 }

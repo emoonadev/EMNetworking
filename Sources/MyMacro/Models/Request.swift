@@ -11,6 +11,6 @@ public struct Request {
     var url: URL
     var headers: [String: String] = [:]
     var queryItems: [URLQueryItem] = []
-    var body: [String: Any]?
+    var body: Encodable?
     var method: HTTPMethod = .post
 }

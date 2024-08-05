@@ -35,6 +35,8 @@ public final class EMNetwork {
         }
         
         if let headerConfigurator {
+            request.headers["Content-Type"] = headerConfigurator.contentType.rawValue
+            
             headerConfigurator.headers().forEach { (key, value) in
                 request.headers[key] = value
             }
@@ -57,8 +59,14 @@ public final class EMNetwork {
         urlRequest.allHTTPHeaderFields = request.headers
         
         if let body = request.body {
-            let jsonSerialization = try JSONSerialization.data(withJSONObject: body)
-            urlRequest.httpBody = jsonSerialization
+            let jsonSerialization: Data
+            
+            if let headerConfigurator, headerConfigurator.contentType == .formURLEncoded {
+                jsonSerialization = try URLEncodedFormEncoder().encode(body)
+            } else {
+                jsonSerialization = try JSONSerialization.data(withJSONObject: try DictionaryEncoder.encode(body))
+                urlRequest.httpBody = jsonSerialization
+            }
 
             #if DEBUG
             print("--> \(request.method.rawValue.uppercased()) \(urlRequest.url?.absoluteString ?? ""): \(String(data: jsonSerialization, encoding: .utf8) ?? "NO BODY")")

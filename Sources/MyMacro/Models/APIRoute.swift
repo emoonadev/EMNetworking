@@ -31,21 +31,21 @@ public extension APIRoute {
     func put<T: Codable>(_ path: CNPath..., body: T) -> Request {
         var req = Request(url: baseURL, headers: baseHeader, body: nil)
         buidPath(for: &req, .put, pahtComponent: path)
-        req.body = try? DictionaryEncoder.encode(body)
+        req.body = body
         return req
     }
 
     func patch<T: Codable>(_ path: CNPath..., body: T) -> Request {
         var req = Request(url: baseURL, headers: baseHeader, body: nil)
         buidPath(for: &req, .patch, pahtComponent: path)
-        req.body = try? DictionaryEncoder.encode(body)
+        req.body = body
         return req
     }
 
     func post<T: Codable>(_ path: CNPath..., body: T) -> Request {
         var req = Request(url: baseURL, headers: baseHeader, body: nil)
         buidPath(for: &req, .post, pahtComponent: path)
-        req.body = try? DictionaryEncoder.encode(body)
+        req.body = body
         return req
     }
 
