@@ -22,29 +22,29 @@ public extension APIRoute {
         return req
     }
 
-    func delete(_ path: CNPath...) -> Request {
+    func delete(_ path: CNPath..., queryItems: URLQueryItem...) -> Request {
         var req = Request(url: baseURL, headers: baseHeader, body: nil)
-        buidPath(for: &req, .delete, pahtComponent: path)
+        buidPath(for: &req, .delete, pahtComponent: path, queryItems: queryItems)
         return req
     }
 
-    func put<T: Codable>(_ path: CNPath..., body: T) -> Request {
+    func put<T: Codable>(_ path: CNPath..., body: T, queryItems: URLQueryItem...) -> Request {
         var req = Request(url: baseURL, headers: baseHeader, body: nil)
-        buidPath(for: &req, .put, pahtComponent: path)
+        buidPath(for: &req, .put, pahtComponent: path, queryItems: queryItems)
         req.body = body
         return req
     }
 
-    func patch<T: Codable>(_ path: CNPath..., body: T) -> Request {
+    func patch<T: Codable>(_ path: CNPath..., body: T, queryItems: URLQueryItem...) -> Request {
         var req = Request(url: baseURL, headers: baseHeader, body: nil)
-        buidPath(for: &req, .patch, pahtComponent: path)
+        buidPath(for: &req, .patch, pahtComponent: path, queryItems: queryItems)
         req.body = body
         return req
     }
 
-    func post<T: Codable>(_ path: CNPath..., body: T) -> Request {
+    func post<T: Codable>(_ path: CNPath..., body: T, queryItems: URLQueryItem...) -> Request {
         var req = Request(url: baseURL, headers: baseHeader, body: nil)
-        buidPath(for: &req, .post, pahtComponent: path)
+        buidPath(for: &req, .post, pahtComponent: path, queryItems: queryItems)
         req.body = body
         return req
     }

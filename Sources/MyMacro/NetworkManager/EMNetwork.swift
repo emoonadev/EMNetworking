@@ -48,6 +48,10 @@ public final class EMNetwork {
 
         var finalURL = request.url
         
+        if let headerConfigurator, headerConfigurator.contentType == .formURLEncoded {
+            finalURL = URL(string: finalURL.absoluteString + "/")!
+        }
+        
         if !request.queryItems.isEmpty {
             var urlComponents = URLComponents(url: finalURL, resolvingAgainstBaseURL: false)!
             urlComponents.queryItems = request.queryItems
@@ -65,22 +69,23 @@ public final class EMNetwork {
                 jsonSerialization = try URLEncodedFormEncoder().encode(body)
             } else {
                 jsonSerialization = try JSONSerialization.data(withJSONObject: try DictionaryEncoder.encode(body))
-                urlRequest.httpBody = jsonSerialization
             }
+            
+            urlRequest.httpBody = jsonSerialization
 
             #if DEBUG
-            print("--> \(request.method.rawValue.uppercased()) \(urlRequest.url?.absoluteString ?? ""): \(String(data: jsonSerialization, encoding: .utf8) ?? "NO BODY")")
+            print("➡️ \(request.method.rawValue.uppercased()) \(urlRequest.url?.absoluteString ?? ""): \(String(data: jsonSerialization, encoding: .utf8) ?? "NO BODY")")
             #endif
         } else {
             #if DEBUG
-                print("--> \(request.method.rawValue.uppercased()) \(urlRequest.url?.absoluteString ?? "")")
+                print("➡️ \(request.method.rawValue.uppercased()) \(urlRequest.url?.absoluteString ?? "")")
             #endif
         }
 
         let (data, response) = try await URLSession.shared.data(for: urlRequest)
 
         #if DEBUG
-            print("<-- \(request.method.rawValue.uppercased()) \(urlRequest.url?.absoluteString ?? ""): \(String(data: data, encoding: .utf8) ?? "NO BODY")")
+            print("⬅️ \(request.method.rawValue.uppercased()) \(urlRequest.url?.absoluteString ?? ""): \(String(data: data, encoding: .utf8) ?? "NO BODY")")
         #endif
 
         do {

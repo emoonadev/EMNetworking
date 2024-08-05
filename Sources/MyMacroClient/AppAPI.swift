@@ -12,7 +12,7 @@ enum AppAPI {
 
     #BaseURL("https://www.tinytap.com/") {
 
-        @RouteAPI("account/api/")
+        @RouteAPI("community/api/")
         enum User {
             @HTTP(.post, path: "login") case login(LoginReq)
         }
