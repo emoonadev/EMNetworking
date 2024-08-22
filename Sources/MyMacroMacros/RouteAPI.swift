@@ -49,8 +49,15 @@ public struct RouteAPI: ExtensionMacro, PeerMacro {
                 }
             }
 
+            let queryItems = caseSynt.elements.first?.parameterClause?.parameters.filter { $0.type.as(IdentifierTypeSyntax.self)?.name.text == "QueryItems" }
+            let queryItemsParamName = queryItems?.first?.firstName?.text
+
+            if (queryItems?.count ?? 0) > 1 {
+                throw DeclError.duplicateQueryItems
+            }
+
             cases.append(
-                CaseMethod(name: caseName, method: methodStr, path: path, parameters: parameters ?? [])
+                CaseMethod(name: caseName, method: methodStr, path: path, parameters: parameters ?? [], queryParameterName: queryItemsParamName)
             )
         }
 
@@ -87,27 +94,53 @@ public struct RouteAPI: ExtensionMacro, PeerMacro {
                             if !caseParams.contains("body") {
                                 throw DeclError.bodyParamMissingForCase(caseMethod.name)
                             }
-                            
+
+                            if let paramName = caseMethod.queryParameterName {
+                                requestSyntax.append("let urlQueryItems: [URLQueryItem] = \(paramName).compactMap { URLQueryItem(name: $0, value: String(describing: $1)) }")
+                            }
+
                             if let path = caseMethod.path {
-                                requestSyntax.append("\(caseMethod.method)(\(transformParameterString(path)), body: body)")
+                                requestSyntax.append("return \(caseMethod.method)(\(transformParameterString(path)), body: body, queryItems: \(caseMethod.queryParameterName != nil ? "urlQueryItems" : "[]"))")
                             } else {
-                                requestSyntax.append("\(caseMethod.method)(body: body)")
+                                requestSyntax.append("return \(caseMethod.method)(body: body, queryItems: \(caseMethod.queryParameterName != nil ? "urlQueryItems" : "[]"))")
                             }
                         }
                     case "get":
                         if caseMethod.parameters.isEmpty {
                             if let path = caseMethod.path {
-                                requestSyntax.append("case .\(caseMethod.name): get(\(transformParameterString(path, asString: true)))")
+                                requestSyntax.append("case .\(caseMethod.name):")
+
+                                if let paramName = caseMethod.queryParameterName {
+                                    requestSyntax.append("let urlQueryItems: [URLQueryItem] = \(paramName).compactMap { URLQueryItem(name: $0, value: String(describing: $1)) }")
+                                }
+
+                                requestSyntax.append("return get(\(transformParameterString(path, asString: true)), queryItems: \(caseMethod.queryParameterName != nil ? "urlQueryItems" : "[]"))")
                             } else {
-                                requestSyntax.append("case .\(caseMethod.name): get()")
+                                requestSyntax.append("case .\(caseMethod.name):")
+
+                                if let paramName = caseMethod.queryParameterName {
+                                    requestSyntax.append("let urlQueryItems: [URLQueryItem] = \(paramName).compactMap { URLQueryItem(name: $0, value: String(describing: $1)) }")
+                                }
+
+                                requestSyntax.append("return get(queryItems: \(caseMethod.queryParameterName != nil ? "urlQueryItems" : "[]"))")
                             }
                         } else {
                             requestSyntax.append("case let .\(caseMethod.name)(\(caseMethod.parameters.compactMap { $0.name }.joined(separator: ", "))):")
 
                             if let path = caseMethod.path {
-                                requestSyntax.append("get(\(transformParameterString(path)))")
+                                if let paramName = caseMethod.queryParameterName {
+                                    requestSyntax.append("let urlQueryItems: [URLQueryItem] = \(paramName).compactMap { URLQueryItem(name: $0, value: String(describing: $1)) }")
+                                }
+
+                                requestSyntax.append("return get(\(transformParameterString(path)), queryItems: \(caseMethod.queryParameterName != nil ? "urlQueryItems" : "[]"))")
                             } else {
-                                requestSyntax.append("case .\(caseMethod.name): get()")
+                                requestSyntax.append("case .\(caseMethod.name):")
+
+                                if let paramName = caseMethod.queryParameterName {
+                                    requestSyntax.append("let urlQueryItems: [URLQueryItem] = \(paramName).compactMap { URLQueryItem(name: $0, value: String(describing: $1)) }")
+                                }
+
+                                requestSyntax.append("return get(queryItems: \(caseMethod.queryParameterName != nil ? "urlQueryItems" : "[]"))")
                             }
                         }
                     default:
@@ -128,7 +161,7 @@ public struct RouteAPI: ExtensionMacro, PeerMacro {
                 "\n\(raw: requestSyntax)"
             },
 //            try ExtensionDeclSyntax("extension \(type.trimmed): APIRoute") {
-//                "\n\(raw: cases)"
+//                "\n\(raw: filteredArray.first?.elements.first?.parameterClause?.parameters.filter { $0.type.as(IdentifierTypeSyntax.self)?.name.text == "QueryItems" })"
 //            },
         ]
     }
@@ -137,10 +170,12 @@ public struct RouteAPI: ExtensionMacro, PeerMacro {
         case onlyApplicableToEnum
         case bodyParamMissingForCase(String)
         case passParamsNotMatching(String)
+        case duplicateQueryItems
 
         public var description: String {
             switch self {
                 case .onlyApplicableToEnum: "@HTTPMethod can only be applied to an enum."
+                case .duplicateQueryItems: "QueryItems is used several times in the same case. Should be used once"
                 case let .bodyParamMissingForCase(caseName): "Body parameter is missing for case `.\(caseName)`"
                 case let .passParamsNotMatching(caseName): "Path parameters dosnt matches with case `.\(caseName)` parameters"
             }
@@ -152,6 +187,7 @@ public struct RouteAPI: ExtensionMacro, PeerMacro {
         var method: String
         var path: String?
         var parameters: [Parameter] = []
+        var queryParameterName: String?
 
         struct Parameter {
             var name: String?
