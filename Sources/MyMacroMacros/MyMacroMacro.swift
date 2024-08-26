@@ -11,5 +11,7 @@ struct MyMacroPlugin: CompilerPlugin {
         HTTPMethodMacro.self,
         RouteAPI.self,
         BaseURL.self,
+        EMCodable.self,
+        EMCodingKey.self,
     ]
 }

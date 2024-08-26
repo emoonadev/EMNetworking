@@ -12,7 +12,9 @@ Task {
             ageGroupID: 2
         )
         
-        let loginRes: LoginRes? = try await networkManager.perform(route: AppAPI.User.login(loginReq))
+        let loginRes: LoginRes? = try await networkManager.perform(route: AppAPI.User.login(loginReq, queryItems: ["queryItem1": 123, "item2" : "value2"]))
+        
+        
         print(loginRes?.subAccounts)
     } catch {}
 }

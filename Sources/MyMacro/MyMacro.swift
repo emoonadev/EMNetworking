@@ -15,3 +15,9 @@ public macro RouteAPI(_ name: CNPath) = #externalMacro(module: "MyMacroMacros", 
 
 @freestanding(declaration, names: named(baseURL), arbitrary)
 public macro BaseURL(_ url: String, _ block: () -> Void) = #externalMacro(module: "MyMacroMacros", type: "BaseURL")
+
+@attached(extension, conformances: Codable, names: arbitrary)
+public macro EMCodable() = #externalMacro(module: "MyMacroMacros", type: "EMCodable")
+
+@attached(peer)
+public macro EMCodingKey(_ name: String) = #externalMacro(module: "MyMacroMacros", type: "EMCodingKey")
