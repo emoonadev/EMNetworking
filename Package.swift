@@ -5,17 +5,17 @@ import PackageDescription
 import CompilerPluginSupport
 
 let package = Package(
-    name: "MyMacro",
+    name: "EMNetworking",
     platforms: [.macOS(.v13), .iOS(.v17), .tvOS(.v13), .watchOS(.v6), .macCatalyst(.v13)],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
-            name: "MyMacro",
-            targets: ["MyMacro"]
+            name: "EMNetworking",
+            targets: ["EMNetworking"]
         ),
         .executable(
-            name: "MyMacroClient",
-            targets: ["MyMacroClient"]
+            name: "EMNetworkingClient",
+            targets: ["EMNetworkingClient"]
         ),
     ],
     dependencies: [
@@ -26,7 +26,7 @@ let package = Package(
         // Targets can depend on other targets in this package and products from dependencies.
         // Macro implementation that performs the source transformation of a macro.
         .macro(
-            name: "MyMacroMacros",
+            name: "EMNetworkingMacros",
             dependencies: [
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
@@ -34,10 +34,10 @@ let package = Package(
         ),
 
         // Library that exposes a macro as part of its API, which is used in client programs.
-        .target(name: "MyMacro", dependencies: ["MyMacroMacros"]),
+        .target(name: "EMNetworking", dependencies: ["EMNetworkingMacros"]),
 
         // A client of the library, which is able to use the macro in its own code.
-        .executableTarget(name: "MyMacroClient", dependencies: ["MyMacro"]),
+        .executableTarget(name: "EMNetworkingClient", dependencies: ["EMNetworking"]),
 
     ]
 )

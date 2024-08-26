@@ -1,6 +1,6 @@
 //
 //  ContentType.swift
-//  MyMacro
+//  EMNetworking
 //
 //  Created by Mickael Belhassen on 05/08/2024.
 //

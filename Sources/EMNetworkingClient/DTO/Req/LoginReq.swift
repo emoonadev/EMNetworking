@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import MyMacro
+import EMNetworking
 
 @EMCodable()
 struct LoginReq {

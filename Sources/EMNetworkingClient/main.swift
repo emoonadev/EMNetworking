@@ -1,6 +1,6 @@
 import _Concurrency
 import Foundation
-import MyMacro
+import EMNetworking
 
 Task {
     do {

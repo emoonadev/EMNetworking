@@ -1,6 +1,6 @@
 //
 //  EMCodingKey.swift
-//  MyMacro
+//  EMNetworking
 //
 //  Created by Mickael Belhassen on 22/08/2024.
 //

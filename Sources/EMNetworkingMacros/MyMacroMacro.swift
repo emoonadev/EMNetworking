@@ -6,7 +6,7 @@ import SwiftSyntaxMacros
 
 
 @main
-struct MyMacroPlugin: CompilerPlugin {
+struct EMNetworkingPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
         HTTPMethodMacro.self,
         RouteAPI.self,
