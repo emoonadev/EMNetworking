@@ -14,7 +14,7 @@ enum AppAPI {
 
         @RouteAPI("community/api/")
         enum User {
-            @HTTP(.post, path: "login") case login(LoginReq, queryItems: QueryItems)
+            @HTTP(.post, path: "login") case login(LoginReq)
         }
 
         @RouteAPI("community/api/")

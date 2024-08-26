@@ -19,7 +19,6 @@ nonisolated(unsafe)let defaultHeader = EMConfigurator.Header(contentType: .formU
     var dic = [String:String]()
     dic["User-Agent"] = "TinyTap/4.5.9 (iPhone; iOS 17.4; Scale/3.00)"
     dic["Accept-Language"] = "en"
-    dic["Content-Type"] = "application/x-www-form-urlencoded"
     dic["TinyDeviceID"] = "BB662BE1-0399-47F0-99EF-50BB36222AAD"
     return dic
 }
