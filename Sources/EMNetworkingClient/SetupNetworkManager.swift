@@ -1,13 +1,12 @@
 //
 //  SetupNetworkManager.swift
-//  
+//
 //
 //  Created by Mickael Belhassen on 01/08/2024.
 //
 
-import Foundation
 import EMNetworking
-
+import Foundation
 
 let token = "f2910bce-1774-48ad-a94e-17a4a3e7356b"
 
@@ -15,15 +14,15 @@ nonisolated(unsafe) let accessToken = EMConfigurator.AccessToken(customKey: "Tin
     token
 }
 
-nonisolated(unsafe)let defaultHeader = EMConfigurator.Header(contentType: .formURLEncoded) {
-    var dic = [String:String]()
+nonisolated(unsafe) let defaultHeader = EMConfigurator.Header(contentType: .formURLEncoded) {
+    var dic = [String: String]()
     dic["User-Agent"] = "TinyTap/4.5.9 (iPhone; iOS 17.4; Scale/3.00)"
     dic["Accept-Language"] = "en"
     dic["TinyDeviceID"] = "BB662BE1-0399-47F0-99EF-50BB36222AAD"
     return dic
 }
 
-nonisolated(unsafe)let queryParameters = EMConfigurator.URLQueryParameter {
+nonisolated(unsafe) let queryParameters = EMConfigurator.URLQueryParameter {
     [
         URLQueryItem(name: "ver", value: "3.4.6"),
         URLQueryItem(name: "bundle_id", value: "com.27dv.tinytap"),
@@ -32,6 +31,7 @@ nonisolated(unsafe)let queryParameters = EMConfigurator.URLQueryParameter {
     ]
 }
 
-nonisolated(unsafe) let networkManager = EMNetwork(accessTokenConfigurator: accessToken, 
-                               headerConfigurator: defaultHeader,
-                               urlQueryParametersConfigurator: queryParameters)
+nonisolated(unsafe) let networkManager = EMNetwork(configurator: EMConfigurator(accessTokenConfigurator: accessToken,
+                                                                                headerConfigurator: defaultHeader,
+                                                                                urlQueryParametersConfigurator: queryParameters)
+)

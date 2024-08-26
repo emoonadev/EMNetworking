@@ -7,9 +7,21 @@
 
 import Foundation
 
-public enum EMConfigurator {
+public struct EMConfigurator {
+    let accessTokenConfigurator: AccessToken?
+    let headerConfigurator: Header?
+    let urlQueryParametersConfigurator: URLQueryParameter?
     
-    public struct AccessToken {
+    public init(accessTokenConfigurator: AccessToken?, headerConfigurator: Header?, urlQueryParametersConfigurator: URLQueryParameter?) {
+        self.accessTokenConfigurator = accessTokenConfigurator
+        self.headerConfigurator = headerConfigurator
+        self.urlQueryParametersConfigurator = urlQueryParametersConfigurator
+    }
+}
+
+public extension EMConfigurator {
+    
+    struct AccessToken {
         var customKey: String?
         var token: () -> String
         
@@ -19,7 +31,7 @@ public enum EMConfigurator {
         }
     }
     
-    public struct Header {
+    struct Header {
         var contentType: ContentType
         var headers: () -> [String:String]
         
@@ -30,14 +42,13 @@ public enum EMConfigurator {
     }
     
     
-    public struct URLQueryParameter {
+    struct URLQueryParameter {
         var parameters: () -> [URLQueryItem]
         
         public init(parameters: @escaping () -> [URLQueryItem]) {
             self.parameters = parameters
         }
     }
-    
     
 }
 

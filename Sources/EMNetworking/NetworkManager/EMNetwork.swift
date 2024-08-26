@@ -8,14 +8,10 @@
 import Foundation
 
 public final class EMNetwork {
-    let accessTokenConfigurator: EMConfigurator.AccessToken?
-    let headerConfigurator: EMConfigurator.Header?
-    let urlQueryParametersConfigurator: EMConfigurator.URLQueryParameter?
+    let configurator: EMConfigurator?
 
-    public init(accessTokenConfigurator: EMConfigurator.AccessToken? = nil, headerConfigurator: EMConfigurator.Header? = nil, urlQueryParametersConfigurator: EMConfigurator.URLQueryParameter? = nil) {
-        self.accessTokenConfigurator = accessTokenConfigurator
-        self.headerConfigurator = headerConfigurator
-        self.urlQueryParametersConfigurator = urlQueryParametersConfigurator
+    public init(configurator: EMConfigurator? = nil) {
+        self.configurator = configurator
     }
 
     public func perform<Model: Codable>(route: APIRoute) async throws -> Model? {
@@ -30,51 +26,51 @@ public final class EMNetwork {
     private func performRequest<T: Codable>(route: APIRoute) async throws -> ServerResponse<T> {
         var request = route.request
 
-        if let accessTokenConfigurator {
+        if let accessTokenConfigurator = configurator?.accessTokenConfigurator {
             request.headers[accessTokenConfigurator.customKey ?? "Authorization"] = accessTokenConfigurator.token()
         }
-        
-        if let headerConfigurator {
-            request.headers["Content-Type"] = headerConfigurator.contentType.rawValue
-            
-            headerConfigurator.headers().forEach { (key, value) in
+
+        if let header = configurator?.headerConfigurator {
+            request.headers["Content-Type"] = configurator?.headerConfigurator?.contentType.rawValue
+
+            configurator?.headerConfigurator?.headers().forEach { key, value in
                 request.headers[key] = value
             }
         }
-        
-        if let urlQueryParametersConfigurator {
+
+        if let urlQueryParametersConfigurator = configurator?.urlQueryParametersConfigurator {
             request.queryItems.insert(contentsOf: urlQueryParametersConfigurator.parameters(), at: 0)
         }
 
         var finalURL = request.url
-        
-        if let headerConfigurator, headerConfigurator.contentType == .formURLEncoded {
+
+        if let headerConfigurator = configurator?.headerConfigurator, headerConfigurator.contentType == .formURLEncoded {
             finalURL = URL(string: finalURL.absoluteString + "/")!
         }
-        
+
         if !request.queryItems.isEmpty {
             var urlComponents = URLComponents(url: finalURL, resolvingAgainstBaseURL: false)!
             urlComponents.queryItems = request.queryItems
             finalURL = urlComponents.url!
         }
-        
+
         var urlRequest = URLRequest(url: finalURL)
         urlRequest.httpMethod = request.method.rawValue.uppercased()
         urlRequest.allHTTPHeaderFields = request.headers
-        
+
         if let body = request.body {
             let jsonSerialization: Data
-            
-            if let headerConfigurator, headerConfigurator.contentType == .formURLEncoded {
+
+            if let headerConfigurator = configurator?.headerConfigurator, headerConfigurator.contentType == .formURLEncoded {
                 jsonSerialization = try URLEncodedFormEncoder().encode(body)
             } else {
                 jsonSerialization = try JSONSerialization.data(withJSONObject: try DictionaryEncoder.encode(body))
             }
-            
+
             urlRequest.httpBody = jsonSerialization
 
             #if DEBUG
-            print("➡️ \(request.method.rawValue.uppercased()) \(urlRequest.url?.absoluteString ?? ""): \(String(data: jsonSerialization, encoding: .utf8) ?? "NO BODY")")
+                print("➡️ \(request.method.rawValue.uppercased()) \(urlRequest.url?.absoluteString ?? ""): \(String(data: jsonSerialization, encoding: .utf8) ?? "NO BODY")")
             #endif
         } else {
             #if DEBUG
