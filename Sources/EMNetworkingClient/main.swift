@@ -6,10 +6,10 @@ Task {
     do {
         let emailLookup = EmailLookupReq(auth: "mickael@tinytap.com")
         
-        let loginRes: LoginRes? = try await networkManager.perform(route: AppAPI.Account.emailLookup(dto: emailLookup))
+        let loginRes: Int? = try await networkManager.perform(route: AppAPI.Account.emailLookup(dto: emailLookup))
         
         
-        print(loginRes?.subAccounts)
+        print(loginRes)
     } catch {}
 }
 

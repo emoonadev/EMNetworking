@@ -8,6 +8,21 @@
 import EMNetworking
 import Foundation
 
+nonisolated(unsafe)
+let logHandler = LogHandler { log in
+    if let body = log.body {
+        print("➡️ \(log.httpMethod.rawValue.uppercased()) \(log.requestURL?.absoluteString ?? ""): \(String(data: body, encoding: .utf8) ?? "NO BODY")")
+    } else {
+        print("➡️ \(log.httpMethod.rawValue.uppercased()) \(log.requestURL?.absoluteString ?? "")")
+    }
+} outputHandler: { log in
+    if let body = log.body {
+        print("⬅️ \(log.httpMethod.rawValue.uppercased()) \(log.requestURL?.absoluteString ?? ""): \(String(data: body, encoding: .utf8) ?? "NO BODY")")
+    } else {
+        print("⬅️ \(log.httpMethod.rawValue.uppercased()) \(log.requestURL?.absoluteString ?? "")")
+    }
+}
+
 let token = "f2910bce-1774-48ad-a94e-17a4a3e7356b"
 
 nonisolated(unsafe) let accessToken = EMConfigurator.AccessToken(customKey: "TinyToken") {
@@ -33,5 +48,6 @@ nonisolated(unsafe) let queryParameters = EMConfigurator.URLQueryParameter {
 
 nonisolated(unsafe) let networkManager = EMNetwork(configurator: EMConfigurator(accessTokenConfigurator: accessToken,
                                                                                 headerConfigurator: defaultHeader,
-                                                                                urlQueryParametersConfigurator: queryParameters)
+                                                                                urlQueryParametersConfigurator: queryParameters),
+                                                   logHandler: logHandler
 )

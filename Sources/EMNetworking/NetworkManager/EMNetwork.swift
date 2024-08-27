@@ -9,9 +9,11 @@ import Foundation
 
 public final class EMNetwork {
     let configurator: EMConfigurator?
+    let logHandler: LogHandler?
 
-    public init(configurator: EMConfigurator? = nil) {
+    public init(configurator: EMConfigurator? = nil, logHandler: LogHandler? = nil) {
         self.configurator = configurator
+        self.logHandler = logHandler
     }
 
     public func perform<Model: Codable>(route: APIRoute) async throws -> Model? {
@@ -31,7 +33,7 @@ public final class EMNetwork {
         }
 
         if let header = configurator?.headerConfigurator {
-            request.headers["Content-Type"] = configurator?.headerConfigurator?.contentType.rawValue
+            request.headers["Content-Type"] = header.contentType.rawValue
 
             configurator?.headerConfigurator?.headers().forEach { key, value in
                 request.headers[key] = value
@@ -69,20 +71,14 @@ public final class EMNetwork {
 
             urlRequest.httpBody = jsonSerialization
 
-            #if DEBUG
-                print("➡️ \(request.method.rawValue.uppercased()) \(urlRequest.url?.absoluteString ?? ""): \(String(data: jsonSerialization, encoding: .utf8) ?? "NO BODY")")
-            #endif
+            logHandler?.outputHandler?(LogHandler.Log(httpMethod: request.method, requestURL: urlRequest.url, body: jsonSerialization))
         } else {
-            #if DEBUG
-                print("➡️ \(request.method.rawValue.uppercased()) \(urlRequest.url?.absoluteString ?? "")")
-            #endif
+            logHandler?.outputHandler?(LogHandler.Log(httpMethod: request.method, requestURL: urlRequest.url, body: nil))
         }
 
         let (data, response) = try await URLSession.shared.data(for: urlRequest)
 
-        #if DEBUG
-            print("⬅️ \(request.method.rawValue.uppercased()) \(urlRequest.url?.absoluteString ?? ""): \(String(data: data, encoding: .utf8) ?? "NO BODY")")
-        #endif
+        logHandler?.inputHandler?(LogHandler.Log(httpMethod: request.method, requestURL: urlRequest.url, body: data))
 
         do {
             let jsonDecoder = JSONDecoder()
