@@ -4,15 +4,9 @@ import EMNetworking
 
 Task {
     do {
-        let loginReq = LoginReq(
-            auth: "mickaelmacro@tt.it",
-            password: "123456",
-            kidNickName: "nickname",
-            languageID: 1,
-            ageGroupID: 2
-        )
+        let emailLookup = EmailLookupReq(auth: "mickael@tinytap.com")
         
-        let loginRes: LoginRes? = try await networkManager.perform(route: AppAPI.User.login(loginReq))
+        let loginRes: LoginRes? = try await networkManager.perform(route: AppAPI.Account.emailLookup(dto: emailLookup))
         
         
         print(loginRes?.subAccounts)

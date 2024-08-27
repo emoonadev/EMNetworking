@@ -13,13 +13,14 @@ enum AppAPI {
     #BaseURL("https://www.tinytap.com/") {
 
         @RouteAPI("community/api/")
-        enum User {
+        enum Community {
             @HTTP(.post, path: "login") case login(LoginReq)
         }
 
-        @RouteAPI("community/api/")
-        enum Community {
-            @HTTP(.get, path: "configurations") case configurations
+        @RouteAPI("account/api/")
+        enum Account {
+            @HTTP(.get, path: "email_lookup") case emailLookup(dto: EmailLookupReq)
         }
     }
+    
 }

@@ -128,19 +128,31 @@ public struct RouteAPI: ExtensionMacro, PeerMacro {
                             requestSyntax.append("case let .\(caseMethod.name)(\(caseMethod.parameters.compactMap { $0.name }.joined(separator: ", "))):")
 
                             if let path = caseMethod.path {
+                                var isQueryItem: Bool = false
+                                
                                 if let paramName = caseMethod.queryParameterName {
                                     requestSyntax.append("let urlQueryItems: [URLQueryItem] = \(paramName).compactMap { URLQueryItem(name: $0, value: String(describing: $1)) }")
+                                    isQueryItem = true
+                                } else if caseMethod.parameters.contains(where: { $0.name == "dto" }) {
+                                    requestSyntax.append("let urlQueryItems: [URLQueryItem] = (try? URLQueryItemEncoder(strategies: .default).encode(dto)) ?? []")
+                                    isQueryItem = true
                                 }
 
-                                requestSyntax.append("return get(\(transformParameterString(path)), queryItems: \(caseMethod.queryParameterName != nil ? "urlQueryItems" : "[]"))")
+                                requestSyntax.append("return get(\(transformParameterString(path)), queryItems: \(isQueryItem ? "urlQueryItems" : "[]"))")
                             } else {
                                 requestSyntax.append("case .\(caseMethod.name):")
 
+                                var isQueryItem: Bool = false
+
                                 if let paramName = caseMethod.queryParameterName {
                                     requestSyntax.append("let urlQueryItems: [URLQueryItem] = \(paramName).compactMap { URLQueryItem(name: $0, value: String(describing: $1)) }")
+                                    isQueryItem = true
+                                } else if caseMethod.parameters.contains(where: { $0.name == "dto" }) {
+                                    requestSyntax.append("let urlQueryItems: [URLQueryItem] = (try? URLQueryItemEncoder(strategies: .default).encode(dto)) ?? []")
+                                    isQueryItem = true
                                 }
 
-                                requestSyntax.append("return get(queryItems: \(caseMethod.queryParameterName != nil ? "urlQueryItems" : "[]"))")
+                                requestSyntax.append("return get(queryItems: \(isQueryItem ? "urlQueryItems" : "[]"))")
                             }
                         }
                     default:
