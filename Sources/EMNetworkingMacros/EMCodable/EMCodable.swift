@@ -28,12 +28,19 @@ public struct EMCodable: ExtensionMacro {
         let keyCodingCaseStr = declaration.attributes.first?.as(AttributeSyntax.self)?.arguments?.as(LabeledExprListSyntax.self)?.first { $0.label?.identifier?.name == "codingKeyStrategy" }?.expression.as(MemberAccessExprSyntax.self)?.declName.baseName.text ?? ".camelCase"
         let keyCodingCase = KeyCodingStrategy.Case(rawValue: keyCodingCaseStr) ?? .camelCase
         
-        properties = filteredArray.map { item in
-            let property = item.bindings.first?.pattern.as(IdentifierPatternSyntax.self)?.identifier.text ?? ""
+        properties.append(contentsOf: filteredArray.map { item in
+            let keyProperties = item.bindings.map { $0.pattern.as(IdentifierPatternSyntax.self)?.identifier.text ?? "" }
             let codingKey = item.attributes.filter { $0.as(AttributeSyntax.self)?.attributeName.as(IdentifierTypeSyntax.self)?.name.text == "EMCodingKey" }.first?.as(AttributeSyntax.self)?.arguments?.as(LabeledExprListSyntax.self)?.first?.expression.as(StringLiteralExprSyntax.self)?.segments.first?.as(StringSegmentSyntax.self)?.content.text
-            let type = item.bindings.first?.typeAnnotation?.type.as(IdentifierTypeSyntax.self)?.name.text ?? item.bindings.first?.typeAnnotation?.type.as(OptionalTypeSyntax.self)?.wrappedType.as(IdentifierTypeSyntax.self)?.name.text.appending("?") ?? ""
+            let type = item.bindings.last?.typeAnnotation?.type.as(IdentifierTypeSyntax.self)?.name.text ?? item.bindings.first?.typeAnnotation?.type.as(OptionalTypeSyntax.self)?.wrappedType.as(IdentifierTypeSyntax.self)?.name.text.appending("?") ?? ""
+            let property = keyProperties.first ?? ""
+            let remainProperties = keyProperties.dropFirst()
+            
+            remainProperties.forEach {
+                properties.append(Property(propertyName: $0, codingKey: codingKey ?? keyCodingStrategy.convert($0, to: keyCodingCase), type: type))
+            }
+            
             return Property(propertyName: property, codingKey: codingKey ?? keyCodingStrategy.convert(property, to: keyCodingCase), type: type)
-        }
+        })
 
         var codingKeysEnum = ""
         codingKeysEnum.append("enum CodingKeys: String, CodingKey {")
