@@ -24,11 +24,15 @@ public struct EMCodable: ExtensionMacro {
         var properties = [Property]()
         var syntax = ""
 
+        let keyCodingStrategy = KeyCodingStrategy()
+        let keyCodingCaseStr = declaration.attributes.first?.as(AttributeSyntax.self)?.arguments?.as(LabeledExprListSyntax.self)?.first { $0.label?.identifier?.name == "codingKeyStrategy" }?.expression.as(MemberAccessExprSyntax.self)?.declName.baseName.text ?? ".camelCase"
+        let keyCodingCase = KeyCodingStrategy.Case(rawValue: keyCodingCaseStr) ?? .camelCase
+        
         properties = filteredArray.map { item in
             let property = item.bindings.first?.pattern.as(IdentifierPatternSyntax.self)?.identifier.text ?? ""
             let codingKey = item.attributes.filter { $0.as(AttributeSyntax.self)?.attributeName.as(IdentifierTypeSyntax.self)?.name.text == "EMCodingKey" }.first?.as(AttributeSyntax.self)?.arguments?.as(LabeledExprListSyntax.self)?.first?.expression.as(StringLiteralExprSyntax.self)?.segments.first?.as(StringSegmentSyntax.self)?.content.text
             let type = item.bindings.first?.typeAnnotation?.type.as(IdentifierTypeSyntax.self)?.name.text ?? item.bindings.first?.typeAnnotation?.type.as(OptionalTypeSyntax.self)?.wrappedType.as(IdentifierTypeSyntax.self)?.name.text.appending("?") ?? ""
-            return Property(propertyName: property, codingKey: codingKey ?? property, type: type)
+            return Property(propertyName: property, codingKey: codingKey ?? keyCodingStrategy.convert(property, to: keyCodingCase), type: type)
         }
 
         var codingKeysEnum = ""

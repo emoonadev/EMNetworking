@@ -17,7 +17,7 @@ public macro RouteAPI(_ name: CNPath) = #externalMacro(module: "EMNetworkingMacr
 public macro BaseURL(_ url: String, _ block: () -> Void) = #externalMacro(module: "EMNetworkingMacros", type: "BaseURL")
 
 @attached(extension, conformances: Codable, names: arbitrary)
-public macro EMCodable() = #externalMacro(module: "EMNetworkingMacros", type: "EMCodable")
+public macro EMCodable(codingKeyStrategy: KeyCodingStrategy.Case = .camelCase) = #externalMacro(module: "EMNetworkingMacros", type: "EMCodable")
 
 @attached(peer)
 public macro EMCodingKey(_ name: String) = #externalMacro(module: "EMNetworkingMacros", type: "EMCodingKey")

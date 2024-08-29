@@ -8,11 +8,11 @@
 import Foundation
 import EMNetworking
 
-@EMCodable()
+@EMCodable(codingKeyStrategy: .snakeCase)
 struct LoginReq {
     var auth: String
     var password: String
-    @EMCodingKey("kid_nickname") var kidNickName: String
-    @EMCodingKey("language_id") var languageID: Int
-    @EMCodingKey("age_group_id") var ageGroupID: Int
+    var kidNickname: String
+    var languageID: Int
+    var ageGroupID: Int
 }
