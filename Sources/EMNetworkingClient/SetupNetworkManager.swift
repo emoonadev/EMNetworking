@@ -8,6 +8,36 @@
 import EMNetworking
 import Foundation
 
+public struct TTServerResponseParser: ServerResponseParser {
+
+    public func parse<T: Codable>(data: Data) throws -> ServerResponse<T> {
+        let decoder = JSONDecoder()
+
+        let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
+
+        guard let jsonDict = jsonObject as? [String: Any] else {
+            throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "Expected a dictionary"))
+        }
+
+        var data: T?
+        let message = jsonDict["result"] as? String ?? ""
+
+        if let dataField = jsonDict["data"] {
+            if JSONSerialization.isValidJSONObject(dataField) {
+                let dataJSON = try JSONSerialization.data(withJSONObject: dataField, options: [])
+                data = try decoder.decode(T.self, from: dataJSON)
+            } else {
+                if message == "fail" {
+                    throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "Something went wrong"))
+                }
+            }
+
+        }
+
+        return ServerResponse(message: message, data: data)
+    }
+}
+
 nonisolated(unsafe)
 let logHandler = LogHandler { log in
     if let body = log.body {
@@ -49,5 +79,5 @@ nonisolated(unsafe) let queryParameters = EMConfigurator.URLQueryParameter {
 nonisolated(unsafe) let networkManager = EMNetwork(configurator: EMConfigurator(accessTokenConfigurator: accessToken,
                                                                                 headerConfigurator: defaultHeader,
                                                                                 urlQueryParametersConfigurator: queryParameters),
-                                                   logHandler: logHandler
-)
+                                                   serverResponseParser: TTServerResponseParser(),
+                                                   logHandler: logHandler)

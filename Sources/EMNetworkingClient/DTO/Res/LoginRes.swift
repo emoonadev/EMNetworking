@@ -14,34 +14,6 @@ struct LoginRes: Sendable {
     let noncustodialAddress: JSONNull?
     let bigPicture: String
     let lastName: String
-    let loginStatus: Int
-    let bio, creationDt: String
-    let rank: Int
-    let referralCode: String
-    let isStaff: Bool
-    let userTypeID, id, totalCredits: Int
-    let firstName, modelName: String
-    let googleID, preferedAgeGroup, feedUnread: Int
-    let childNickname: String
-    let facebookID: Int
-    let dateOfBirth: String
-    let subscriptionChannel, subscriptionStatus: Int
-    let pictureUpdateDt, newToken: String
-    let kycApproved: Bool
-    let email, username: String
-    let picture: String
-    let getPrivacyPolicyConsent: String
-    let registered: Bool
-    let coverPhoto: String
-    let userType: String
-    let playsCount, openAssignments, totalAssignments: Int
-    let subAccounts: [SubAccount]
-    let certified: Bool
-    let preferedLanguage: Int
-    let oldToken: String
-    let gender: JSONNull?
-    let userPk: Int
-    let token: String
     let isSubscribedToMarketing: Int
     let wasPro: Bool
     let permissions: [Permission]
