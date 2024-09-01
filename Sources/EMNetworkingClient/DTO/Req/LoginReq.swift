@@ -16,4 +16,10 @@ struct LoginReq {
     var languageID: Int
     var ageGroupID: Int
     var ageGroupdfID: [Int]
+    var user: LoginReq.User
+    
+    struct User: Codable {
+        
+    }
 }
+
