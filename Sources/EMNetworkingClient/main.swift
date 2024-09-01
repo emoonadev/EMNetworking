@@ -6,7 +6,7 @@ Task {
     do {
         let req = LoginReq(
             auth: "mickael@tinytap.com",
-            password: "capoeira",
+            password: "capoeifgcbfvra",
             kidNickName: "nickname",
             languageID: 1,
             ageGroupID: 2,
@@ -20,3 +20,5 @@ Task {
 }
 
 CFRunLoopRun()
+
+

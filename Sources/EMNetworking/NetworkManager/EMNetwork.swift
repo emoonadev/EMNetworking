@@ -9,11 +9,13 @@ import Foundation
 
 public final class EMNetwork {
     let configurator: EMConfigurator?
+    let serverResponseParser: ServerResponseParser
     let logHandler: LogHandler?
 
-    public init(configurator: EMConfigurator? = nil, logHandler: LogHandler? = nil) {
+    public init(configurator: EMConfigurator? = nil, serverResponseParser: ServerResponseParser = DefaultServerResponseParser(), logHandler: LogHandler? = nil) {
         self.configurator = configurator
         self.logHandler = logHandler
+        self.serverResponseParser = serverResponseParser
     }
 
     public func perform<Model: Codable>(route: APIRoute) async throws -> Model? {
@@ -81,9 +83,7 @@ public final class EMNetwork {
         logHandler?.inputHandler?(LogHandler.Log(httpMethod: request.method, requestURL: urlRequest.url, body: data))
 
         do {
-            let jsonDecoder = JSONDecoder()
-            jsonDecoder.dateDecodingStrategy = .secondsSince1970
-            let serverResponse = try jsonDecoder.decode(ServerResponse<T>.self, from: data)
+            let serverResponse: ServerResponse<T> = try serverResponseParser.parse(data: data)
 
             guard let statusCode = (response as? HTTPURLResponse)?.statusCode, 200..<299 ~= statusCode else {
                 throw EMError.network(serverResponse.message ?? "Failure")
