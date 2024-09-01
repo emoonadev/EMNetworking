@@ -12,14 +12,8 @@ import EMNetworking
 struct LoginReq {
     var auth: String
     var password: String
-    var kidNickname: String
-    var languageID: Int
-    var ageGroupID: Int
-    var ageGroupdfID: [Int]
-    var user: LoginReq.User
-    
-    struct User: Codable {
-        
-    }
+    var kidNickName: String?
+    var languageID: Int?
+    var ageGroupID: Int?
+    var userType: Int?
 }
-

@@ -86,7 +86,7 @@ public final class EMNetwork {
             let serverResponse = try jsonDecoder.decode(ServerResponse<T>.self, from: data)
 
             guard let statusCode = (response as? HTTPURLResponse)?.statusCode, 200..<299 ~= statusCode else {
-                throw EMError.network(serverResponse.result)
+                throw EMError.network(serverResponse.message ?? "Failure")
             }
 
             return serverResponse

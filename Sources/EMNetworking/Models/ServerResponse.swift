@@ -8,8 +8,8 @@
 import Foundation
 
 public struct ServerResponse<T: Codable>: Codable {
-    let result: String
-    let data: T?
+    public let message: String?
+    public let data: T?
 }
 
 public struct Nothing: Codable {
