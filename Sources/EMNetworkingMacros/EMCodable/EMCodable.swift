@@ -21,6 +21,7 @@ public struct EMCodable: ExtensionMacro {
 //                $0.attributes.first?.as(AttributeSyntax.self)?.attributeName.as(IdentifierTypeSyntax.self)?.name.text == "HTTP"
 //            }
 
+        var typealiases = [TypeAlias]()
         var properties = [Property]()
         var syntax = ""
 
@@ -51,6 +52,10 @@ public struct EMCodable: ExtensionMacro {
                     return "\(optionalType)?"
                 } else if let arrayType = item.bindings.last?.typeAnnotation?.type.as(ArrayTypeSyntax.self)?.element.as(IdentifierTypeSyntax.self)?.name.text {
                     return "[\(arrayType)]"
+                } else if let memberSynt = item.bindings.last?.typeAnnotation?.type.as(MemberTypeSyntax.self), let baseType = memberSynt.baseType.as(IdentifierTypeSyntax.self)?.name.text {
+                    let typeAliaseName = baseType+memberSynt.name.text
+                    typealiases.append(.init(name: typeAliaseName, value: "\(baseType).\(memberSynt.name.text)"))
+                    return typeAliaseName
                 } else {
                     return ""
                 }
@@ -75,6 +80,10 @@ public struct EMCodable: ExtensionMacro {
                 type: type
             )
         })
+        
+        var typeAliasesSyn = ""
+        typeAliasesSyn.append(typealiases.map { "typealias \($0.name) = \($0.value)" }.joined(separator: "\n"))
+        typeAliasesSyn.append("\n")
 
         var codingKeysEnum = ""
         codingKeysEnum.append("enum CodingKeys: String, CodingKey {")
@@ -93,6 +102,7 @@ public struct EMCodable: ExtensionMacro {
         initMethod.append(properties.map { "\($0.propertyName) = try container.\($0.isOptional ? "decodeIfPresent" : "decode")(\($0.type.replacingOccurrences(of: "?", with: "")).self, forKey: .\($0.propertyName))" }.joined(separator: "\n"))
         initMethod.append("}")
 
+        syntax.append(typeAliasesSyn)
         syntax.append(codingKeysEnum)
         syntax.append(initMethod)
         syntax.append(encodeMethod)
@@ -113,6 +123,11 @@ public struct EMCodable: ExtensionMacro {
         var isOptional: Bool {
             type.contains("?")
         }
+    }
+    
+    struct TypeAlias {
+        var name: String
+        var value: String
     }
 
 }
