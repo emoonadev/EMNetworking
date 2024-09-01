@@ -7,14 +7,10 @@
 
 import Foundation
 
-struct KeyCodingStrategy {
+public struct KeyCodingStrategy {
 
-    enum Case: String {
-        case snakeCase
-        case camelCase
-        case pascalCase
-        case kebabCase
-        case unknown
+    public enum Case: String {
+        case snakeCase, camelCase, pascalCase, kebabCase, unknown
     }
     
     func detectCase(from input: String) -> Case {
