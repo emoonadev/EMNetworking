@@ -15,4 +15,5 @@ struct LoginReq {
     var kidNickname: String
     var languageID: Int
     var ageGroupID: Int
+    var ageGroupdfID: [Int]
 }
