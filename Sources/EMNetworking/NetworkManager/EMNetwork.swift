@@ -86,16 +86,16 @@ public final class EMNetwork {
             let serverResponse: ServerResponse<T> = try serverResponseParser.parse(data: data)
 
             guard let statusCode = (response as? HTTPURLResponse)?.statusCode, 200..<299 ~= statusCode else {
-                throw EMError.network(serverResponse.message ?? "Failure")
+                throw NSError(domain: "com.emNetwork.error", code: (response as? HTTPURLResponse)?.statusCode ?? -232, userInfo: [NSLocalizedDescriptionKey: "Failure"])
             }
 
             return serverResponse
-        } catch {
+        } catch let error as NSError {
             #if DEBUG
                 print("🔴 Error on decoding: \(error)")
             #endif
 
-            throw EMError.network(error.localizedDescription)
+            throw NSError(domain: "com.emNetwork.error", code: error.code, userInfo: [NSLocalizedDescriptionKey: error.localizedDescription])
         }
     }
 
