@@ -48,14 +48,20 @@ public struct EMCodable: ExtensionMacro {
             let type: String = {
                 if let lastType = item.bindings.last?.typeAnnotation?.type.as(IdentifierTypeSyntax.self)?.name.text {
                     return lastType
-                } else if let optionalType = item.bindings.first?.typeAnnotation?.type.as(OptionalTypeSyntax.self)?.wrappedType.as(IdentifierTypeSyntax.self)?.name.text {
+                } else if let optionalType = item.bindings.last?.typeAnnotation?.type.as(OptionalTypeSyntax.self)?.wrappedType.as(IdentifierTypeSyntax.self)?.name.text {
                     return "\(optionalType)?"
                 } else if let arrayType = item.bindings.last?.typeAnnotation?.type.as(ArrayTypeSyntax.self)?.element.as(IdentifierTypeSyntax.self)?.name.text {
                     return "[\(arrayType)]"
+                } else if let arrayType = item.bindings.last?.typeAnnotation?.type.as(OptionalTypeSyntax.self)?.wrappedType.as(ArrayTypeSyntax.self)?.element.as(IdentifierTypeSyntax.self)?.name.text {
+                    return "[\(arrayType)]?"
                 } else if let memberSynt = item.bindings.last?.typeAnnotation?.type.as(MemberTypeSyntax.self), let baseType = memberSynt.baseType.as(IdentifierTypeSyntax.self)?.name.text {
                     let typeAliaseName = baseType+memberSynt.name.text
                     typealiases.append(.init(name: typeAliaseName, value: "\(baseType).\(memberSynt.name.text)"))
                     return typeAliaseName
+                } else if let memberSynt = item.bindings.last?.typeAnnotation?.type.as(OptionalTypeSyntax.self)?.wrappedType.as(MemberTypeSyntax.self), let baseType = memberSynt.baseType.as(IdentifierTypeSyntax.self)?.name.text {
+                    let typeAliaseName = baseType+memberSynt.name.text
+                    typealiases.append(.init(name: typeAliaseName, value: "\(baseType).\(memberSynt.name.text)"))
+                    return typeAliaseName + "?"
                 } else {
                     return ""
                 }

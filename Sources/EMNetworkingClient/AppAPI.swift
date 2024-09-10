@@ -20,6 +20,7 @@ enum AppAPI {
         @RouteAPI("account/api/")
         enum Account {
             @HTTP(.get, path: "email_lookup") case emailLookup(dto: EmailLookupReq)
+            @HTTP(.get, path: "profile", .parameter("id"), "history") case profile(id: Int)
         }
     }
     

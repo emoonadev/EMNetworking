@@ -10,10 +10,10 @@ import EMNetworking
 
 @EMCodable(codingKeyStrategy: .snakeCase)
 struct LoginReq {
-    var auth: String
-    var password: String
-    var kidNickName: String?
-    var languageID: Int?
-    var ageGroupID: Int?
-    var userType: Int?
+    var languageID: LoginReq.User?
+    
+    @EMCodable(codingKeyStrategy: .snakeCase)
+    struct User {
+        var test: String
+    }
 }
