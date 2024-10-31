@@ -20,5 +20,6 @@ public struct LogHandler {
         public var httpMethod: HTTPMethod
         public var requestURL: URL?
         public var body: Data?
+        public var httpHeaders: [String: String]?
     }
 }

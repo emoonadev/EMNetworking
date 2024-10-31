@@ -40,17 +40,31 @@ public struct TTServerResponseParser: ServerResponseParser {
 
 nonisolated(unsafe)
 let logHandler = LogHandler { log in
-    if let body = log.body {
-        print("➡️ \(log.httpMethod.rawValue.uppercased()) \(log.requestURL?.absoluteString ?? ""): \(String(data: body, encoding: .utf8) ?? "NO BODY")")
-    } else {
-        print("➡️ \(log.httpMethod.rawValue.uppercased()) \(log.requestURL?.absoluteString ?? "")")
+    var logs = [String]()
+    logs.append("⬅️ \(log.httpMethod.rawValue.uppercased()) \(log.requestURL?.absoluteString ?? "")")
+    
+    if let headers = log.httpHeaders {
+        logs.append("Headers: \(String(describing: headers))")
     }
+    
+    if let body = log.body {
+        logs.append("Body: \(String(data: body, encoding: .utf8) ?? "NO BODY")")
+    }
+    
+    print(logs.joined(separator: "\n  - "))
 } outputHandler: { log in
-    if let body = log.body {
-        print("⬅️ \(log.httpMethod.rawValue.uppercased()) \(log.requestURL?.absoluteString ?? ""): \(String(data: body, encoding: .utf8) ?? "NO BODY")")
-    } else {
-        print("⬅️ \(log.httpMethod.rawValue.uppercased()) \(log.requestURL?.absoluteString ?? "")")
+    var logs = [String]()
+    logs.append("➡️ \(log.httpMethod.rawValue.uppercased()) \(log.requestURL?.absoluteString ?? "")")
+    
+    if let headers = log.httpHeaders {
+        logs.append("Headers: \(String(describing: headers))")
     }
+    
+    if let body = log.body {
+        logs.append("Body: \(String(data: body, encoding: .utf8) ?? "NO BODY")")
+    }
+    
+    print(logs.joined(separator: "\n  - "))
 }
 
 let token = "f2910bce-1774-48ad-a94e-17a4a3e7356b"
@@ -76,7 +90,8 @@ nonisolated(unsafe) let queryParameters = EMConfigurator.URLQueryParameter {
     ]
 }
 
-nonisolated(unsafe) let networkManager = EMNetwork(configurator: EMConfigurator(accessTokenConfigurator: accessToken,
+nonisolated(unsafe)
+let networkManager = EMNetwork(configurator: EMConfigurator(accessTokenConfigurator: accessToken,
                                                                                 headerConfigurator: defaultHeader,
                                                                                 urlQueryParametersConfigurator: queryParameters),
                                                    serverResponseParser: TTServerResponseParser(),
