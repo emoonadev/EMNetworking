@@ -46,7 +46,20 @@ public final class EMNetwork {
             request.queryItems.insert(contentsOf: urlQueryParametersConfigurator.parameters(), at: 0)
         }
 
-        var finalURL = request.url
+        var finalURL: URL = if let environmentConfigurator = configurator?.environmentConfigurator {
+            switch environmentConfigurator.env() {
+                case .prod:
+                    request.url.prod
+                case .staging:
+                    request.url.staging ?? request.url.prod
+                case .dev:
+                    request.url.dev ?? request.url.prod
+                case .test:
+                    request.url.test ?? request.url.prod
+            }
+        } else {
+            request.url.prod
+        }
 
         if let headerConfigurator = configurator?.headerConfigurator, headerConfigurator.contentType == .formURLEncoded {
             finalURL = URL(string: finalURL.absoluteString + "/")!
@@ -81,11 +94,11 @@ public final class EMNetwork {
         let (data, response) = try await URLSession.shared.data(for: urlRequest)
 
         var httpHeaders = [String: String]()
-        
+
         (response as? HTTPURLResponse)?.allHeaderFields.forEach {
             httpHeaders[String(describing: $0.key)] = String(describing: $0.value)
         }
-        
+
         logHandler?.inputHandler?(LogHandler.Log(httpMethod: request.method, requestURL: urlRequest.url, body: data, httpHeaders: httpHeaders))
 
         do {
@@ -105,4 +118,7 @@ public final class EMNetwork {
         }
     }
 
+    public enum Environment {
+        case prod, staging, dev, test
+    }
 }

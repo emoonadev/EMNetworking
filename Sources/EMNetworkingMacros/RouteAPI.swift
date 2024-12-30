@@ -28,7 +28,7 @@ public struct RouteAPI: ExtensionMacro, PeerMacro {
                 $0.attributes.first?.as(AttributeSyntax.self)?.attributeName.as(IdentifierTypeSyntax.self)?.name.text == "HTTP"
             }
 
-        let baseURL = attr.arguments?.as(LabeledExprListSyntax.self)?.last?.expression.as(ForceUnwrapExprSyntax.self)?.expression.as(FunctionCallExprSyntax.self)?.arguments.first?.expression.as(StringLiteralExprSyntax.self)?.segments.first?.as(StringSegmentSyntax.self)?.content.text ?? ""
+        let baseURL = attr.arguments?.as(LabeledExprListSyntax.self)?.last?.expression.as(FunctionCallExprSyntax.self)?.arguments.description ?? ""
         let controllerPath = attr.arguments?.as(LabeledExprListSyntax.self)?.first?.expression.as(StringLiteralExprSyntax.self)?.segments.first?.as(StringSegmentSyntax.self)?.content.text ?? ""
 
         try filteredArray.forEach { caseSynt in
@@ -75,7 +75,18 @@ public struct RouteAPI: ExtensionMacro, PeerMacro {
         if !cases.isEmpty {
             requestSyntax.append(
                 """
-                var baseURL: URL { URL(string: \"\(baseURL + controllerPath)\")! }
+                var baseURL: BaseURL {
+                    var baseURL = BaseURL(\(baseURL))
+
+                    \"\(controllerPath)\".split(separator: "/").forEach { 
+                        baseURL.prod.append(path: "\\($0)")
+                        baseURL.staging?.append(path: "\\($0)") 
+                        baseURL.test?.append(path: "\\($0)") 
+                        baseURL.dev?.append(path: "\\($0)") 
+                    }
+                
+                    return baseURL
+                }
 
                 var request: Request {
                     switch self {
@@ -128,8 +139,8 @@ public struct RouteAPI: ExtensionMacro, PeerMacro {
                             requestSyntax.append("case let .\(caseMethod.name)(\(caseMethod.parameters.compactMap { $0.name }.joined(separator: ", "))):")
 
                             if let path = caseMethod.path {
-                                var isQueryItem: Bool = false
-                                
+                                var isQueryItem = false
+
                                 if let paramName = caseMethod.queryParameterName {
                                     requestSyntax.append("let urlQueryItems: [URLQueryItem] = \(paramName).compactMap { URLQueryItem(name: $0, value: String(describing: $1)) }")
                                     isQueryItem = true
@@ -142,7 +153,7 @@ public struct RouteAPI: ExtensionMacro, PeerMacro {
                             } else {
                                 requestSyntax.append("case .\(caseMethod.name):")
 
-                                var isQueryItem: Bool = false
+                                var isQueryItem = false
 
                                 if let paramName = caseMethod.queryParameterName {
                                     requestSyntax.append("let urlQueryItems: [URLQueryItem] = \(paramName).compactMap { URLQueryItem(name: $0, value: String(describing: $1)) }")

@@ -42,28 +42,28 @@ nonisolated(unsafe)
 let logHandler = LogHandler { log in
     var logs = [String]()
     logs.append("⬅️ \(log.httpMethod.rawValue.uppercased()) \(log.requestURL?.absoluteString ?? "")")
-    
+
     if let headers = log.httpHeaders {
         logs.append("Headers: \(String(describing: headers))")
     }
-    
+
     if let body = log.body {
         logs.append("Body: \(String(data: body, encoding: .utf8) ?? "NO BODY")")
     }
-    
+
     print(logs.joined(separator: "\n  - "))
 } outputHandler: { log in
     var logs = [String]()
     logs.append("➡️ \(log.httpMethod.rawValue.uppercased()) \(log.requestURL?.absoluteString ?? "")")
-    
+
     if let headers = log.httpHeaders {
         logs.append("Headers: \(String(describing: headers))")
     }
-    
+
     if let body = log.body {
         logs.append("Body: \(String(data: body, encoding: .utf8) ?? "NO BODY")")
     }
-    
+
     print(logs.joined(separator: "\n  - "))
 }
 
@@ -90,9 +90,14 @@ nonisolated(unsafe) let queryParameters = EMConfigurator.URLQueryParameter {
     ]
 }
 
+nonisolated(unsafe) let env = EMConfigurator.Environment {
+    .dev
+}
+
 nonisolated(unsafe)
 let networkManager = EMNetwork(configurator: EMConfigurator(accessTokenConfigurator: accessToken,
-                                                                                headerConfigurator: defaultHeader,
-                                                                                urlQueryParametersConfigurator: queryParameters),
-                                                   serverResponseParser: TTServerResponseParser(),
-                                                   logHandler: logHandler)
+                                                            headerConfigurator: defaultHeader,
+                                                            urlQueryParametersConfigurator: queryParameters,
+                                                            environmentConfigurator: env),
+                               serverResponseParser: TTServerResponseParser(),
+                               logHandler: logHandler)

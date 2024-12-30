@@ -11,11 +11,13 @@ public struct EMConfigurator {
     let accessTokenConfigurator: AccessToken?
     let headerConfigurator: Header?
     let urlQueryParametersConfigurator: URLQueryParameter?
+    let environmentConfigurator: Environment?
 
-    public init(accessTokenConfigurator: AccessToken?, headerConfigurator: Header?, urlQueryParametersConfigurator: URLQueryParameter?) {
+    public init(accessTokenConfigurator: AccessToken?, headerConfigurator: Header?, urlQueryParametersConfigurator: URLQueryParameter?, environmentConfigurator: Environment? = .init(env: { .prod })) {
         self.accessTokenConfigurator = accessTokenConfigurator
         self.headerConfigurator = headerConfigurator
         self.urlQueryParametersConfigurator = urlQueryParametersConfigurator
+        self.environmentConfigurator = environmentConfigurator
     }
 }
 
@@ -46,6 +48,14 @@ public extension EMConfigurator {
 
         public init(parameters: @escaping () -> [URLQueryItem]) {
             self.parameters = parameters
+        }
+    }
+    
+    struct Environment {
+        var env: () -> EMNetwork.Environment
+
+        public init(env: @escaping () -> EMNetwork.Environment) {
+            self.env = env
         }
     }
 

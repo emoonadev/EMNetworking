@@ -9,7 +9,7 @@ import Foundation
 
 public protocol APIRoute {
     var request: Request { get }
-    var baseURL: URL { get }
+    var baseURL: BaseURL { get }
 }
 
 public extension APIRoute {
@@ -50,7 +50,12 @@ public extension APIRoute {
     }
 
     func buidPath(for request: inout Request, _ method: HTTPMethod, pahtComponent: [CNPath], queryItems: [URLQueryItem] = []) {
-        pahtComponent.forEach { request.url.appendPathComponent($0.path) }
+        pahtComponent.forEach {
+            request.url.prod.appendPathComponent($0.path)
+            request.url.dev?.appendPathComponent($0.path)
+            request.url.staging?.appendPathComponent($0.path)
+            request.url.test?.appendPathComponent($0.path)
+        }
         request.queryItems.append(contentsOf: queryItems)
         request.method = method
     }

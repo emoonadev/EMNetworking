@@ -8,7 +8,7 @@
 import Foundation
 
 public struct Request {
-    var url: URL
+    var url: BaseURL
     var headers: [String: String] = [:]
     var queryItems: [URLQueryItem] = []
     var body: Encodable?
