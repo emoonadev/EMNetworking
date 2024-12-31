@@ -9,7 +9,6 @@ import EMNetworking
 import Foundation
 
 enum AppAPI {
-
 //    #BaseURL("https://www.tinytap.com/") {
 //
 //        @RouteAPI("community/api/")
@@ -66,7 +65,6 @@ enum AppAPI {
 //            @HTTP(.get, path: "profile", .parameter("id"), "history") case profile(id: Int)
 //        }
 //    }
-
 
     #BaseURL(BaseURL("https://www.tinytap.com/", dev: "https://www.dev.tinytap.com/")) {
 
