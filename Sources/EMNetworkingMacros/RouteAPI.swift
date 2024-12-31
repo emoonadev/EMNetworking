@@ -118,7 +118,7 @@ public struct RouteAPI: ExtensionMacro, PeerMacro {
                         }
                     case "get":
                         if caseMethod.parameters.isEmpty {
-                            if let path = caseMethod.path {
+                            if let path = caseMethod.path, !path.isEmpty {
                                 requestSyntax.append("case .\(caseMethod.name):")
 
                                 if let paramName = caseMethod.queryParameterName {
@@ -138,7 +138,7 @@ public struct RouteAPI: ExtensionMacro, PeerMacro {
                         } else {
                             requestSyntax.append("case let .\(caseMethod.name)(\(caseMethod.parameters.compactMap { $0.name }.joined(separator: ", "))):")
 
-                            if let path = caseMethod.path {
+                            if let path = caseMethod.path, !path.isEmpty {
                                 var isQueryItem = false
 
                                 if let paramName = caseMethod.queryParameterName {
