@@ -86,9 +86,9 @@ public final class EMNetwork {
 
             urlRequest.httpBody = jsonSerialization
 
-            logHandler?.outputHandler?(LogHandler.Log(httpMethod: request.method, requestURL: urlRequest.url, body: jsonSerialization, httpHeaders: urlRequest.allHTTPHeaderFields))
+            logHandler?.outputHandler?(LogHandler.OutputLog(httpMethod: request.method, requestURL: urlRequest.url, body: jsonSerialization, httpHeaders: urlRequest.allHTTPHeaderFields))
         } else {
-            logHandler?.outputHandler?(LogHandler.Log(httpMethod: request.method, requestURL: urlRequest.url, body: nil, httpHeaders: urlRequest.allHTTPHeaderFields))
+            logHandler?.outputHandler?(LogHandler.OutputLog(httpMethod: request.method, requestURL: urlRequest.url, body: nil, httpHeaders: urlRequest.allHTTPHeaderFields))
         }
 
         let (data, response) = try await URLSession.shared.data(for: urlRequest)
@@ -99,7 +99,7 @@ public final class EMNetwork {
             httpHeaders[String(describing: $0.key)] = String(describing: $0.value)
         }
 
-        logHandler?.inputHandler?(LogHandler.Log(httpMethod: request.method, requestURL: urlRequest.url, body: data, httpHeaders: httpHeaders))
+        logHandler?.inputHandler?(LogHandler.InputLog(httpMethod: request.method, requestURL: urlRequest.url, body: data, httpHeaders: httpHeaders, statusCode: (response as? HTTPURLResponse)?.statusCode ?? -1))
 
         do {
             let serverResponse: ServerResponse<T> = try serverResponseParser.parse(data: data)

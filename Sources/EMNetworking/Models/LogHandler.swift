@@ -8,18 +8,38 @@
 import Foundation
 
 public struct LogHandler {
-    public var inputHandler: ((Log) -> ())?
-    public var outputHandler: ((Log) -> ())?
+    public var inputHandler: ((InputLog) -> ())?
+    public var outputHandler: ((OutputLog) -> ())?
 
-    public init(inputHandler: ((Log) -> ())? = nil, outputHandler: ((Log) -> ())? = nil) {
+    public init(inputHandler: ((InputLog) -> ())? = nil, outputHandler: ((OutputLog) -> ())? = nil) {
         self.inputHandler = inputHandler
         self.outputHandler = outputHandler
     }
 
-    public struct Log {
+    public class Log {
         public var httpMethod: HTTPMethod
         public var requestURL: URL?
         public var body: Data?
         public var httpHeaders: [String: String]?
+        
+        init(httpMethod: HTTPMethod, requestURL: URL? = nil, body: Data? = nil, httpHeaders: [String : String]? = nil) {
+            self.httpMethod = httpMethod
+            self.requestURL = requestURL
+            self.body = body
+            self.httpHeaders = httpHeaders
+        }
+    }
+    
+    public class InputLog: Log {
+        public var statusCode: Int
+        
+        init(httpMethod: HTTPMethod, requestURL: URL? = nil, body: Data? = nil, httpHeaders: [String : String]? = nil, statusCode: Int) {
+            self.statusCode = statusCode
+            super.init(httpMethod: httpMethod, requestURL: requestURL, body: body, httpHeaders: httpHeaders)
+        }
+    }
+    
+    public class OutputLog: Log {
+        
     }
 }
