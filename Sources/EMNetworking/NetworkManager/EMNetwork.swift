@@ -67,7 +67,32 @@ public final class EMNetwork {
 
         if !request.queryItems.isEmpty {
             var urlComponents = URLComponents(url: finalURL, resolvingAgainstBaseURL: false)!
-            urlComponents.queryItems = request.queryItems
+            
+            if let headerConfigurator = configurator?.headerConfigurator,
+               case let .formURLEncoded(alphabetizeKeyValuePairs, arrayEncoding, boolEncoding, dataEncoding, dateEncoding, keyEncoding, spaceEncoding, allowedCharacters) = headerConfigurator.contentType {
+                let encoder = URLEncodedFormEncoder(
+                    alphabetizeKeyValuePairs: alphabetizeKeyValuePairs,
+                    arrayEncoding: arrayEncoding,
+                    boolEncoding: boolEncoding,
+                    dataEncoding: dataEncoding,
+                    dateEncoding: dateEncoding,
+                    keyEncoding: keyEncoding,
+                    spaceEncoding: spaceEncoding,
+                    allowedCharacters: allowedCharacters
+                )
+                
+                let queryItemsDict = Dictionary(
+                    request.queryItems.map { ($0.name, $0.value ?? "") },
+                    uniquingKeysWith: { first, _ in first }
+                )
+                
+                if let encodedQuery: String = try? encoder.encode(queryItemsDict) {
+                    urlComponents.percentEncodedQuery = encodedQuery
+                }
+            } else {
+                urlComponents.queryItems = request.queryItems
+            }
+            
             finalURL = urlComponents.url!
         }
 
