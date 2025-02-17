@@ -35,7 +35,7 @@ public final class EMNetwork {
         }
 
         if let header = configurator?.headerConfigurator {
-            request.headers["Content-Type"] = header.contentType.rawValue
+            request.headers["Content-Type"] = header.contentType.value
 
             configurator?.headerConfigurator?.headers().forEach { key, value in
                 request.headers[key] = value
@@ -61,7 +61,7 @@ public final class EMNetwork {
             request.url.prod
         }
 
-        if let headerConfigurator = configurator?.headerConfigurator, headerConfigurator.contentType == .formURLEncoded {
+        if let headerConfigurator = configurator?.headerConfigurator, case .formURLEncoded = headerConfigurator.contentType {
             finalURL = URL(string: finalURL.absoluteString + "/")!
         }
 
@@ -78,8 +78,8 @@ public final class EMNetwork {
         if let body = request.body {
             let jsonSerialization: Data
 
-            if let headerConfigurator = configurator?.headerConfigurator, headerConfigurator.contentType == .formURLEncoded {
-                jsonSerialization = try URLEncodedFormEncoder().encode(body)
+            if let headerConfigurator = configurator?.headerConfigurator, case let .formURLEncoded(alphabetizeKeyValuePairs, arrayEncoding, boolEncoding, dataEncoding, dateEncoding, keyEncoding, spaceEncoding, allowedCharacters) = headerConfigurator.contentType {
+                jsonSerialization = try URLEncodedFormEncoder(alphabetizeKeyValuePairs: alphabetizeKeyValuePairs, arrayEncoding: arrayEncoding, boolEncoding: boolEncoding, dataEncoding: dataEncoding, dateEncoding: dateEncoding, keyEncoding: keyEncoding, spaceEncoding: spaceEncoding, allowedCharacters: allowedCharacters).encode(body)
             } else {
                 jsonSerialization = try JSONSerialization.data(withJSONObject: try DictionaryEncoder.encode(body))
             }
