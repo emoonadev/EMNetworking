@@ -4,11 +4,7 @@ import EMNetworking
 
 Task {
     do {
-        let req = LoginReq(
-            languageID: 1
-        )
-        
-        let res: LoginRes? = try await networkManager.perform(route: AppAPI.Community.login(req))
+        let res: Int? = try await networkManager.perform(route: AppAPI.Account.emailLookup(dto: .init(auth: "kirilltest+123123@tt.it")))
         
         print("Response \(String(describing: res))")
     } catch {}

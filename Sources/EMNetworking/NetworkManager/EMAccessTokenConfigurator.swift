@@ -8,12 +8,14 @@
 import Foundation
 
 public struct EMConfigurator {
+    let urlSessionConfiguration: URLSessionConfiguration
     let accessTokenConfigurator: AccessToken?
     let headerConfigurator: Header?
     let urlQueryParametersConfigurator: URLQueryParameter?
     let environmentConfigurator: Environment?
 
-    public init(accessTokenConfigurator: AccessToken?, headerConfigurator: Header?, urlQueryParametersConfigurator: URLQueryParameter?, environmentConfigurator: Environment? = .init(env: { .prod })) {
+    public init(urlSessionConfiguration: URLSessionConfiguration = URLSessionConfiguration.default, accessTokenConfigurator: AccessToken?, headerConfigurator: Header?, urlQueryParametersConfigurator: URLQueryParameter?, environmentConfigurator: Environment? = .init(env: { .prod })) {
+        self.urlSessionConfiguration = urlSessionConfiguration
         self.accessTokenConfigurator = accessTokenConfigurator
         self.headerConfigurator = headerConfigurator
         self.urlQueryParametersConfigurator = urlQueryParametersConfigurator
