@@ -73,7 +73,7 @@ nonisolated(unsafe) let accessToken = EMConfigurator.AccessToken(customKey: "Tin
     token
 }
 
-nonisolated(unsafe) let defaultHeader = EMConfigurator.Header(contentType: .formURLEncoded) {
+nonisolated(unsafe) let defaultHeader = EMConfigurator.Header(contentType: .formURLEncoded(spaceEncoding: .percentEscaped, allowedCharacters: .afURLQueryAllowed)) {
     var dic = [String: String]()
     dic["User-Agent"] = "TinyTap/4.5.9 (iPhone; iOS 17.4; Scale/3.00)"
     dic["Accept-Language"] = "en"
@@ -91,7 +91,7 @@ nonisolated(unsafe) let queryParameters = EMConfigurator.URLQueryParameter {
 }
 
 nonisolated(unsafe) let env = EMConfigurator.Environment {
-    .dev
+    .prod
 }
 
 nonisolated(unsafe)

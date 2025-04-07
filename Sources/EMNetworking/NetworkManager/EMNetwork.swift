@@ -115,8 +115,16 @@ public final class EMNetwork {
         } else {
             logHandler?.outputHandler?(LogHandler.OutputLog(httpMethod: request.method, requestURL: urlRequest.url, body: nil, httpHeaders: urlRequest.allHTTPHeaderFields))
         }
+        
+        let session: URLSession
 
-        let (data, response) = try await URLSession.shared.data(for: urlRequest)
+        if let urlSessionConfiguration = configurator?.urlSessionConfiguration {
+            session = URLSession(configuration: urlSessionConfiguration)
+        } else {
+            session = URLSession.shared
+        }
+        
+        let (data, response) = try await session.data(for: urlRequest)
 
         var httpHeaders = [String: String]()
 
