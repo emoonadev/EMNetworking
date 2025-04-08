@@ -8,3 +8,4 @@
 import Foundation
 
 public typealias QueryItems = [String: Any]
+public typealias HeaderItems = [String: Any]

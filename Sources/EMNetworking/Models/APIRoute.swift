@@ -16,40 +16,40 @@ public extension APIRoute {
 
     var baseHeader: [String: String] { [String: String]() }
 
-    func get(_ path: CNPath..., queryItems: [URLQueryItem] = []) -> Request {
+    func get(_ path: CNPath..., queryItems: [URLQueryItem] = [], headerItems: [String: String] = [:]) -> Request {
         var req = Request(url: baseURL, headers: baseHeader, body: nil)
-        buidPath(for: &req, .get, pahtComponent: path, queryItems: queryItems)
+        buidPath(for: &req, .get, pahtComponent: path, queryItems: queryItems, headerItems: headerItems)
         return req
     }
 
-    func delete(_ path: CNPath..., queryItems: [URLQueryItem] = []) -> Request {
+    func delete(_ path: CNPath..., queryItems: [URLQueryItem] = [], headerItems: [String: String] = [:]) -> Request {
         var req = Request(url: baseURL, headers: baseHeader, body: nil)
-        buidPath(for: &req, .delete, pahtComponent: path, queryItems: queryItems)
+        buidPath(for: &req, .delete, pahtComponent: path, queryItems: queryItems, headerItems: headerItems)
         return req
     }
 
-    func put<T: Codable>(_ path: CNPath..., body: T, queryItems: [URLQueryItem] = []) -> Request {
+    func put<T: Codable>(_ path: CNPath..., body: T, queryItems: [URLQueryItem] = [], headerItems: [String: String] = [:]) -> Request {
         var req = Request(url: baseURL, headers: baseHeader, body: nil)
-        buidPath(for: &req, .put, pahtComponent: path, queryItems: queryItems)
+        buidPath(for: &req, .put, pahtComponent: path, queryItems: queryItems, headerItems: headerItems)
         req.body = body
         return req
     }
 
-    func patch<T: Codable>(_ path: CNPath..., body: T, queryItems: [URLQueryItem] = []) -> Request {
+    func patch<T: Codable>(_ path: CNPath..., body: T, queryItems: [URLQueryItem] = [], headerItems: [String: String] = [:]) -> Request {
         var req = Request(url: baseURL, headers: baseHeader, body: nil)
-        buidPath(for: &req, .patch, pahtComponent: path, queryItems: queryItems)
+        buidPath(for: &req, .patch, pahtComponent: path, queryItems: queryItems, headerItems: headerItems)
         req.body = body
         return req
     }
 
-    func post<T: Codable>(_ path: CNPath..., body: T, queryItems: [URLQueryItem] = []) -> Request {
+    func post<T: Codable>(_ path: CNPath..., body: T, queryItems: [URLQueryItem] = [], headerItems: [String: String] = [:]) -> Request {
         var req = Request(url: baseURL, headers: baseHeader, body: nil)
-        buidPath(for: &req, .post, pahtComponent: path, queryItems: queryItems)
+        buidPath(for: &req, .post, pahtComponent: path, queryItems: queryItems, headerItems: headerItems)
         req.body = body
         return req
     }
 
-    func buidPath(for request: inout Request, _ method: HTTPMethod, pahtComponent: [CNPath], queryItems: [URLQueryItem] = []) {
+    func buidPath(for request: inout Request, _ method: HTTPMethod, pahtComponent: [CNPath], queryItems: [URLQueryItem] = [], headerItems: [String: String] = [:]) {
         pahtComponent.forEach {
             request.url.prod.appendPathComponent($0.path)
             request.url.dev?.appendPathComponent($0.path)
@@ -58,5 +58,6 @@ public extension APIRoute {
         }
         request.queryItems.append(contentsOf: queryItems)
         request.method = method
+        request.headers.merge(headerItems) { _, new in new }
     }
 }

@@ -68,16 +68,22 @@ enum AppAPI {
 
     #BaseURL(BaseURL("https://www.tinytap.com/", dev: "https://www.dev.tinytap.com/")) {
 
-        @RouteAPI("community/api/")
-        enum Community {
-            @HTTP(.post, path: "login") case login(LoginReq)
-        }
+//        @RouteAPI("community/api/")
+//        enum Community {
+//            @HTTP(.post, path: "login") case login(LoginReq)
+//        }
 
         @RouteAPI("account/api/")
         enum Account {
             @HTTP(.get, path: "email_lookup") case emailLookup(dto: EmailLookupReq)
             @HTTP(.get, path: "profile", .parameter("id"), "history") case profile(id: Int)
         }
+    }
+    
+    @RouteAPI("community/api/", baseURL: BaseURL("https://www.tinytap.com/", dev: "https://www.dev.tinytap.com/"))
+    enum Community {
+        @HTTP(.post, path: "login") case login(LoginReq, header: HeaderItems)
+        @HTTP(.get, path: "login") case log(dto: LoginReq, header: HeaderItems)
     }
 
 }

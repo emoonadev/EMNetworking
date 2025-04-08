@@ -55,9 +55,16 @@ public struct RouteAPI: ExtensionMacro, PeerMacro {
             if (queryItems?.count ?? 0) > 1 {
                 throw DeclError.duplicateQueryItems
             }
+            
+            let headerItems = caseSynt.elements.first?.parameterClause?.parameters.filter { $0.type.as(IdentifierTypeSyntax.self)?.name.text == "HeaderItems" }
+            let headerItemsParamName = headerItems?.first?.firstName?.text
+
+            if (queryItems?.count ?? 0) > 1 {
+                throw DeclError.duplicateHeaderItems
+            }
 
             cases.append(
-                CaseMethod(name: caseName, method: methodStr, path: path, parameters: parameters ?? [], queryParameterName: queryItemsParamName)
+                CaseMethod(name: caseName, method: methodStr, path: path, parameters: parameters ?? [], queryParameterName: queryItemsParamName, headersParameterName: headerItemsParamName)
             )
         }
 
@@ -109,11 +116,15 @@ public struct RouteAPI: ExtensionMacro, PeerMacro {
                             if let paramName = caseMethod.queryParameterName {
                                 requestSyntax.append("let urlQueryItems: [URLQueryItem] = \(paramName).compactMap { URLQueryItem(name: $0, value: String(describing: $1)) }")
                             }
+                            
+                            if let paramName = caseMethod.headersParameterName {
+                                requestSyntax.append("let headerItems: [String: String] = \(paramName).compactMapValues { String(describing: $0) }")
+                            }
 
                             if let path = caseMethod.path {
-                                requestSyntax.append("return \(caseMethod.method)(\(transformParameterString(path)), body: body, queryItems: \(caseMethod.queryParameterName != nil ? "urlQueryItems" : "[]"))")
+                                requestSyntax.append("return \(caseMethod.method)(\(transformParameterString(path)), body: body, queryItems: \(caseMethod.queryParameterName != nil ? "urlQueryItems" : "[]"), headerItems: \(caseMethod.headersParameterName != nil ? "headerItems" : "[:]"))")
                             } else {
-                                requestSyntax.append("return \(caseMethod.method)(body: body, queryItems: \(caseMethod.queryParameterName != nil ? "urlQueryItems" : "[]"))")
+                                requestSyntax.append("return \(caseMethod.method)(body: body, queryItems: \(caseMethod.queryParameterName != nil ? "urlQueryItems" : "[]"), headerItems: \(caseMethod.headersParameterName != nil ? "headerItems" : "[:]"))")
                             }
                         }
                     case "get":
@@ -148,8 +159,12 @@ public struct RouteAPI: ExtensionMacro, PeerMacro {
                                     requestSyntax.append("let urlQueryItems: [URLQueryItem] = (try? URLQueryItemEncoder(strategies: .default).encode(dto)) ?? []")
                                     isQueryItem = true
                                 }
+                                
+                                if let paramName = caseMethod.headersParameterName {
+                                    requestSyntax.append("let headerItems: [String: String] = \(paramName).compactMapValues { String(describing: $0) }")
+                                }
 
-                                requestSyntax.append("return get(\(transformParameterString(path)), queryItems: \(isQueryItem ? "urlQueryItems" : "[]"))")
+                                requestSyntax.append("return get(\(transformParameterString(path)), queryItems: \(isQueryItem ? "urlQueryItems" : "[]"), headerItems: \(caseMethod.headersParameterName != nil ? "headerItems" : "[:]"))")
                             } else {
                                 requestSyntax.append("case .\(caseMethod.name):")
 
@@ -163,7 +178,11 @@ public struct RouteAPI: ExtensionMacro, PeerMacro {
                                     isQueryItem = true
                                 }
 
-                                requestSyntax.append("return get(queryItems: \(isQueryItem ? "urlQueryItems" : "[]"))")
+                                if let paramName = caseMethod.headersParameterName {
+                                    requestSyntax.append("let headerItems: [String: String] = \(paramName).compactMapValues { String(describing: $0) }")
+                                }
+                                
+                                requestSyntax.append("return get(queryItems: \(isQueryItem ? "urlQueryItems" : "[]"), headerItems: \(caseMethod.headersParameterName != nil ? "headerItems" : "[:]"))")
                             }
                         }
                     default:
@@ -194,11 +213,13 @@ public struct RouteAPI: ExtensionMacro, PeerMacro {
         case bodyParamMissingForCase(String)
         case passParamsNotMatching(String)
         case duplicateQueryItems
+        case duplicateHeaderItems
 
         public var description: String {
             switch self {
                 case .onlyApplicableToEnum: "@HTTPMethod can only be applied to an enum."
                 case .duplicateQueryItems: "QueryItems is used several times in the same case. Should be used once"
+                case .duplicateHeaderItems: "HeaderItems is used several times in the same case. Should be used once"
                 case let .bodyParamMissingForCase(caseName): "Body parameter is missing for case `.\(caseName)`"
                 case let .passParamsNotMatching(caseName): "Path parameters dosnt matches with case `.\(caseName)` parameters"
             }
@@ -211,6 +232,7 @@ public struct RouteAPI: ExtensionMacro, PeerMacro {
         var path: String?
         var parameters: [Parameter] = []
         var queryParameterName: String?
+        var headersParameterName: String?
 
         struct Parameter {
             var name: String?
