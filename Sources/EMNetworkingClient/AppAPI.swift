@@ -83,7 +83,7 @@ enum AppAPI {
     @RouteAPI("community/api/", baseURL: BaseURL("https://www.tinytap.com/", dev: "https://www.dev.tinytap.com/"))
     enum Community {
         @HTTP(.post, path: "login") case login(LoginReq, header: HeaderItems)
-        @HTTP(.get, path: "login") case log(dto: LoginReq, header: HeaderItems)
+        @HTTP(.get, path: "login") case log(header: HeaderItems)
     }
 
 }
