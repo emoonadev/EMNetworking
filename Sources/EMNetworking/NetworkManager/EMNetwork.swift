@@ -37,6 +37,7 @@ public final class EMNetwork {
         if let header = configurator?.headerConfigurator {
             request.headers["Content-Type"] = header.contentType.value
             request.headers.merge(header.headers()) { old, _ in old }
+            request.headers = request.headers.filter { $0.value != IgnoreValue.ignore }
         }
 
         if let urlQueryParametersConfigurator = configurator?.urlQueryParametersConfigurator {
