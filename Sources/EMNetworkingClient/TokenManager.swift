@@ -33,13 +33,6 @@ final class KeychainTokenManager: TokenManaging {
         return newToken
     }
     
-    var isTokenValid: Bool {
-        guard let expirationData = try? getKeychainValue(forKey: expirationKey) else {
-            return false
-        }
-        return Date(timeIntervalSince1970: Double(expirationData) ?? 0) > Date()
-    }
-    
     // MARK: - Keychain helpers
     
     private func saveToKeychain(value: String, forKey key: String) throws {

@@ -30,7 +30,11 @@ public extension EMConfigurator {
         var refreshTokenManager: TokenManaging
         var authenticationType: AuthenticationType
         
-        public init(customKey: String? = nil, authenticationType: AuthenticationType = .none, refreshTokenManager: TokenManaging) {
+        public init(
+            customKey: String? = nil,
+            authenticationType: AuthenticationType = .bearer,
+            refreshTokenManager: TokenManaging
+        ) {
             self.customKey = customKey
             self.authenticationType = authenticationType
             self.refreshTokenManager = refreshTokenManager
@@ -50,11 +54,6 @@ public extension EMConfigurator {
             }
         }
         
-        var isTokenValid: (() -> Bool)? {
-            { refreshTokenManager.isTokenValid }
-        }
-        
-
         public init(customKey: String? = nil, token: @escaping () -> String) {
             self.customKey = customKey
             self.authenticationType = .none
