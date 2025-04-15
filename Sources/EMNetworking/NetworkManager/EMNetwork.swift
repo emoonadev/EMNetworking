@@ -30,8 +30,18 @@ public final class EMNetwork {
     private func performRequest<T: Codable>(route: APIRoute) async throws -> ServerResponse<T> {
         var request = route.request
 
-        if let accessTokenConfigurator = configurator?.accessTokenConfigurator {
-            request.headers[accessTokenConfigurator.customKey ?? "Authorization"] = accessTokenConfigurator.token()
+         if let accessTokenConfigurator = configurator?.accessTokenConfigurator {
+            do {
+                let token = try await accessTokenConfigurator.token()
+                request.headers[accessTokenConfigurator.customKey ?? "Authorization"] = token
+            } catch {
+                if let refreshToken = accessTokenConfigurator.refreshToken {
+                    let newToken = try await refreshToken()
+                    request.headers[accessTokenConfigurator.customKey ?? "Authorization"] = newToken
+                } else {
+                    throw error
+                }
+            }
         }
 
         if let header = configurator?.headerConfigurator {
@@ -131,6 +141,16 @@ public final class EMNetwork {
         }
 
         logHandler?.inputHandler?(LogHandler.InputLog(httpMethod: request.method, requestURL: urlRequest.url, body: data, httpHeaders: httpHeaders, statusCode: (response as? HTTPURLResponse)?.statusCode ?? -1))
+
+        if (response as? HTTPURLResponse)?.statusCode == 401, let accessTokenConfigurator = configurator?.accessTokenConfigurator, let refreshToken = accessTokenConfigurator.refreshToken {
+            do {
+                let newToken = try await refreshToken()
+                request.headers[accessTokenConfigurator.customKey ?? "Authorization"] = newToken
+                return try await performRequest(route: route)
+            } catch {
+                throw error
+            }
+        }
 
         do {
             let serverResponse: ServerResponse<T> = try serverResponseParser.parse(data: data)

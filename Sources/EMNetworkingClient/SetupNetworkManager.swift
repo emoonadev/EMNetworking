@@ -69,9 +69,11 @@ let logHandler = LogHandler { log in
 
 let token = "f2910bce-1774-48ad-a94e-17a4a3e7356b"
 
-nonisolated(unsafe) let accessToken = EMConfigurator.AccessToken(customKey: "TinyToken") {
-    token
-}
+nonisolated(unsafe) let tokenManager = KeychainTokenManager()
+nonisolated(unsafe) let accessToken = EMConfigurator.AccessToken(
+    authenticationType: .bearer,
+    refreshTokenManager: tokenManager
+)
 
 nonisolated(unsafe) let defaultHeader = EMConfigurator.Header(contentType: .formURLEncoded(spaceEncoding: .percentEscaped, allowedCharacters: .afURLQueryAllowed)) {
     var dic = [String: String]()
@@ -94,6 +96,7 @@ nonisolated(unsafe) let env = EMConfigurator.Environment {
     .prod
 }
 
+
 nonisolated(unsafe)
 let networkManager = EMNetwork(configurator: EMConfigurator(accessTokenConfigurator: accessToken,
                                                             headerConfigurator: defaultHeader,
@@ -101,3 +104,4 @@ let networkManager = EMNetwork(configurator: EMConfigurator(accessTokenConfigura
                                                             environmentConfigurator: env),
                                serverResponseParser: TTServerResponseParser(),
                                logHandler: logHandler)
+
