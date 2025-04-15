@@ -27,14 +27,41 @@ public extension EMConfigurator {
 
     struct AccessToken {
         var customKey: String?
-        var token: () -> String
+        var refreshTokenManager: TokenManaging
+        var authenticationType: AuthenticationType
+        
+        public init(customKey: String? = nil, authenticationType: AuthenticationType = .none, refreshTokenManager: TokenManaging) {
+            self.customKey = customKey
+            self.authenticationType = authenticationType
+            self.refreshTokenManager = refreshTokenManager
+        }
+        
+        var token: () async throws -> String {
+            {
+                let rawToken = try await refreshTokenManager.getToken()
+                return authenticationType.format(token: rawToken)
+            }
+        }
+        
+        var refreshToken: (() async throws -> String)? {
+            {
+                let rawToken = try await refreshTokenManager.refreshToken()
+                return authenticationType.format(token: rawToken)
+            }
+        }
+        
+        var isTokenValid: (() -> Bool)? {
+            { refreshTokenManager.isTokenValid }
+        }
+        
 
         public init(customKey: String? = nil, token: @escaping () -> String) {
             self.customKey = customKey
-            self.token = token
+            self.authenticationType = .none
+            self.refreshTokenManager = LegacyTokenManager(token: token)
         }
     }
-
+    
     struct Header {
         var contentType: ContentType
         var headers: () -> [String: String]
@@ -61,4 +88,24 @@ public extension EMConfigurator {
         }
     }
 
+}
+
+private class LegacyTokenManager: TokenManaging {
+    private let legacyToken: () -> String
+    
+    init(token: @escaping () -> String) {
+        self.legacyToken = token
+    }
+    
+    func getToken() async throws -> String {
+        return legacyToken()
+    }
+    
+    func refreshToken() async throws -> String {
+        return legacyToken()
+    }
+    
+    var isTokenValid: Bool {
+        return true
+    }
 }
