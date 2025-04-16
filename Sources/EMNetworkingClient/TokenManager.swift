@@ -15,7 +15,7 @@ final class KeychainTokenManager: TokenManaging {
     private let refreshTokenKey = "refreshToken"
     private let expirationKey = "tokenExpiration"
     
-    func getToken() async throws -> String? {
+    func getToken() async throws -> String {
         guard let token = try? getKeychainValue(forKey: accessTokenKey),
               let expirationData = try? getKeychainValue(forKey: expirationKey),
               Date(timeIntervalSince1970: Double(expirationData) ?? 0) > Date() else {
@@ -24,7 +24,7 @@ final class KeychainTokenManager: TokenManaging {
         return token
     }
     
-    func refreshToken() async throws -> String? {
+    func refreshToken() async throws -> String {
 
         return "newToken"
     }

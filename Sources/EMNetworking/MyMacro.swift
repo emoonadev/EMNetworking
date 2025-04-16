@@ -5,7 +5,7 @@
 import Foundation
 
 @attached(peer)
-public macro HTTP(_ method: HTTPMethod, path: CNPath...) = #externalMacro(module: "EMNetworkingMacros", type: "HTTPMethodMacro")
+public macro HTTP(_ method: HTTPMethod, path: CNPath..., isAuthRequired: Bool = true) = #externalMacro(module: "EMNetworkingMacros", type: "HTTPMethodMacro")
 
 @attached(extension, conformances: APIRoute, names: arbitrary)
 public macro RouteAPI(_ controller: CNPath, baseURL: BaseURL) = #externalMacro(module: "EMNetworkingMacros", type: "RouteAPI")

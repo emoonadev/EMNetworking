@@ -15,9 +15,8 @@ public enum AuthenticationType {
         }
     }
 
-    func format(token: String?) -> String? {
-        if let token {
-            switch self {
+    func format(token: String) -> String {
+        switch self {
             case .bearer, .custom:
                 return "\(headerPrefix) \(token)"
             case let .basic(username, password):
@@ -25,9 +24,6 @@ public enum AuthenticationType {
                 return "\(headerPrefix) \(credentials)"
             case .none:
                 return token
-            }
-        } else {
-            return nil
         }
     }
 }

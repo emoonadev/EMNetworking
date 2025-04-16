@@ -66,24 +66,25 @@ enum AppAPI {
 //        }
 //    }
 
-    #BaseURL(BaseURL("https://www.tinytap.com/", dev: "https://www.dev.tinytap.com/")) {
-
-//        @RouteAPI("community/api/")
-//        enum Community {
-//            @HTTP(.post, path: "login") case login(LoginReq)
+//    #BaseURL(BaseURL("https://www.tinytap.com/", dev: "https://www.dev.tinytap.com/")) {
+//
+////        @RouteAPI("community/api/")
+////        enum Community {
+////            @HTTP(.post, path: "login") case login(LoginReq)
+////        }
+//
+//        @RouteAPI("account/api/")
+//        enum Account {
+//            @HTTP(.get, path: "email_lookup") case emailLookup(dto: EmailLookupReq)
+//            @HTTP(.get, path: "profile", .parameter("id"), "history") case profile(id: Int)
 //        }
-
-        @RouteAPI("account/api/")
-        enum Account {
-            @HTTP(.get, path: "email_lookup") case emailLookup(dto: EmailLookupReq)
-            @HTTP(.get, path: "profile", .parameter("id"), "history") case profile(id: Int)
-        }
-    }
+//    }
     
     @RouteAPI("community/api/", baseURL: BaseURL("https://www.tinytap.com/", dev: "https://www.dev.tinytap.com/"))
     enum Community {
-        @HTTP(.post, path: "login") case login(LoginReq, header: HeaderItems)
-        @HTTP(.get, path: "login") case log(header: HeaderItems)
+        @HTTP(.post, path: "login", isAuthRequired: true) case login(LoginReq, header: HeaderItems)
+        @HTTP(.get, path: "login", "erwefwed") case fsdfc(header: HeaderItems)
+        @HTTP(.get, path: "login", "ttt", isAuthRequired: false) case aaaa(header: HeaderItems)
     }
 
 }
