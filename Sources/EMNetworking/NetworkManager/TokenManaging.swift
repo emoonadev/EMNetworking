@@ -8,8 +8,8 @@
 import Foundation
 
 public protocol TokenManaging {
-    func getToken() async throws -> String
+    var token: String { get }
+    var isTokenValid: Bool { get }
     func refreshToken() async throws -> String
-    func isValidToken() -> Bool
 }
 

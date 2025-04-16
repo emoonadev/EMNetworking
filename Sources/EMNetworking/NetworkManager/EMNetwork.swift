@@ -28,7 +28,7 @@ public final class EMNetwork {
         let _: ServerResponse<Nothing> = try await performRequest(route: route)
     }
 
-    private func performRequest<T: Codable>(route: APIRoute) async throws -> ServerResponse<T> {
+    private func performRequest<T: Codable>(route: APIRoute, isIgnoreRefreshing: Bool = false) async throws -> ServerResponse<T> {
         var request = route.request
 
         func performRefreshToken() async throws {
@@ -49,15 +49,14 @@ public final class EMNetwork {
         }
         
         if let accessTokenConfigurator = configurator?.accessTokenConfigurator, request.isAuthRequired {
-            if accessTokenConfigurator.isValidToken || isRefreshingToken {
-                do {
-                    let token = try await accessTokenConfigurator.token()
-                    request.headers[accessTokenConfigurator.customKey ?? "Authorization"] = token
-                } catch {
-                    try await performRefreshToken()
-                }
+            if accessTokenConfigurator.isTokenValid || isIgnoreRefreshing {
+                request.headers[accessTokenConfigurator.customKey ?? "Authorization"] = accessTokenConfigurator.token
             } else {
-                try await performRefreshToken()
+                if !isRefreshingToken {
+                    try await performRefreshToken()
+                } else {
+                    throw NSError(domain: "com.emNetwork.error", code: -338, userInfo: [NSLocalizedDescriptionKey: "Refreshing access token..."])
+                }
             }
         }
 
@@ -158,15 +157,6 @@ public final class EMNetwork {
         }
 
         logHandler?.inputHandler?(LogHandler.InputLog(httpMethod: request.method, requestURL: urlRequest.url, body: data, httpHeaders: httpHeaders, statusCode: (response as? HTTPURLResponse)?.statusCode ?? -1))
-
-        if (response as? HTTPURLResponse)?.statusCode == 401, let accessTokenConfigurator = configurator?.accessTokenConfigurator, let refreshToken = accessTokenConfigurator.refreshToken, request.isAuthRequired {
-            do {
-                try await performRefreshToken()
-                return try await performRequest(route: route)
-            } catch {
-                throw error
-            }
-        }
 
         do {
             let serverResponse: ServerResponse<T> = try serverResponseParser.parse(data: data)

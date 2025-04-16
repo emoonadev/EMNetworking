@@ -40,17 +40,12 @@ public extension EMConfigurator {
             self.refreshTokenManager = refreshTokenManager
         }
         
-        var token: () async throws -> String {
-            {
-                let rawToken = try await refreshTokenManager.getToken()
-                return authenticationType.format(token: rawToken)
-            }
+        var token: String {
+            refreshTokenManager.token
         }
         
-        var isValidToken: Bool {
-            {
-                refreshTokenManager.isValidToken()
-            }()
+        var isTokenValid: Bool {
+            refreshTokenManager.isTokenValid
         }
         
         var refreshToken: (() async throws -> String)? {
@@ -102,7 +97,7 @@ private class LegacyTokenManager: TokenManaging {
         self.legacyToken = token
     }
     
-    func getToken() async throws -> String {
+    var token: String {
         return legacyToken()
     }
     
@@ -110,7 +105,7 @@ private class LegacyTokenManager: TokenManaging {
         return legacyToken()
     }
     
-    func isValidToken() -> Bool {
+    var isTokenValid: Bool {
         true
     }
 }
