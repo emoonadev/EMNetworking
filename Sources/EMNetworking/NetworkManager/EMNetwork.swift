@@ -48,7 +48,7 @@ public final class EMNetwork {
             }
         }
         
-        if let accessTokenConfigurator = configurator?.accessTokenConfigurator, request.isAuthRequired, !isRefreshingToken {
+        if let accessTokenConfigurator = configurator?.accessTokenConfigurator, request.isAuthRequired {
             if accessTokenConfigurator.isValidToken || isRefreshingToken {
                 do {
                     let token = try await accessTokenConfigurator.token()
