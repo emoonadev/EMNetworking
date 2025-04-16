@@ -40,14 +40,14 @@ public extension EMConfigurator {
             self.refreshTokenManager = refreshTokenManager
         }
         
-        var token: () async throws -> String {
+        var token: () async throws -> String? {
             {
                 let rawToken = try await refreshTokenManager.getToken()
                 return authenticationType.format(token: rawToken)
             }
         }
         
-        var refreshToken: (() async throws -> String)? {
+        var refreshToken: (() async throws -> String?)? {
             {
                 let rawToken = try await refreshTokenManager.refreshToken()
                 return authenticationType.format(token: rawToken)
@@ -96,11 +96,11 @@ private class LegacyTokenManager: TokenManaging {
         self.legacyToken = token
     }
     
-    func getToken() async throws -> String {
+    func getToken() async throws -> String? {
         return legacyToken()
     }
     
-    func refreshToken() async throws -> String {
+    func refreshToken() async throws -> String? {
         return legacyToken()
     }
     
