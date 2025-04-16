@@ -19,8 +19,8 @@ public final class EMNetwork {
         self.serverResponseParser = serverResponseParser
     }
 
-    public func perform<Model: Codable>(route: APIRoute) async throws -> Model? {
-        let serverResponse: ServerResponse<Model> = try await performRequest(route: route)
+    public func perform<Model: Codable>(route: APIRoute, isIgnoreRefreshing: Bool = false) async throws -> Model? {
+        let serverResponse: ServerResponse<Model> = try await performRequest(route: route, isIgnoreRefreshing: isIgnoreRefreshing)
         return serverResponse.data
     }
 
