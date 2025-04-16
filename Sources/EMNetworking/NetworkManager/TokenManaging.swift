@@ -12,8 +12,3 @@ public protocol TokenManaging {
     func refreshToken() async throws -> String
 }
 
-public enum TokenError: Error {
-    case invalidToken
-    case refreshFailed
-    case tokenExpired
-}

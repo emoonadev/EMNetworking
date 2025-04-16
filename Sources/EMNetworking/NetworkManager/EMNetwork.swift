@@ -31,7 +31,7 @@ public final class EMNetwork {
     private func performRequest<T: Codable>(route: APIRoute) async throws -> ServerResponse<T> {
         var request = route.request
 
-        if let accessTokenConfigurator = configurator?.accessTokenConfigurator {
+        if let accessTokenConfigurator = configurator?.accessTokenConfigurator, request.isAuthRequired {
             do {
                 let token = try await accessTokenConfigurator.token()
                 request.headers[accessTokenConfigurator.customKey ?? "Authorization"] = token
@@ -148,7 +148,7 @@ public final class EMNetwork {
 
         logHandler?.inputHandler?(LogHandler.InputLog(httpMethod: request.method, requestURL: urlRequest.url, body: data, httpHeaders: httpHeaders, statusCode: (response as? HTTPURLResponse)?.statusCode ?? -1))
 
-        if (response as? HTTPURLResponse)?.statusCode == 401, let accessTokenConfigurator = configurator?.accessTokenConfigurator, let refreshToken = accessTokenConfigurator.refreshToken {
+        if (response as? HTTPURLResponse)?.statusCode == 401, let accessTokenConfigurator = configurator?.accessTokenConfigurator, let refreshToken = accessTokenConfigurator.refreshToken, request.isAuthRequired {
             do {
                 let newToken = try await refreshToken()
                 request.headers[accessTokenConfigurator.customKey ?? "Authorization"] = newToken

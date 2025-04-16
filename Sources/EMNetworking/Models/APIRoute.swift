@@ -16,40 +16,40 @@ public extension APIRoute {
 
     var baseHeader: [String: String] { [String: String]() }
 
-    func get(_ path: CNPath..., queryItems: [URLQueryItem] = [], headerItems: [String: String] = [:]) -> Request {
+    func get(_ path: CNPath..., queryItems: [URLQueryItem] = [], headerItems: [String: String] = [:], isAuthRequired: Bool) -> Request {
         var req = Request(url: baseURL, headers: baseHeader, body: nil)
-        buidPath(for: &req, .get, pahtComponent: path, queryItems: queryItems, headerItems: headerItems)
+        buidPath(for: &req, .get, pahtComponent: path, queryItems: queryItems, headerItems: headerItems, isAuthRequired: isAuthRequired)
         return req
     }
 
-    func delete(_ path: CNPath..., queryItems: [URLQueryItem] = [], headerItems: [String: String] = [:]) -> Request {
+    func delete(_ path: CNPath..., queryItems: [URLQueryItem] = [], headerItems: [String: String] = [:], isAuthRequired: Bool) -> Request {
         var req = Request(url: baseURL, headers: baseHeader, body: nil)
-        buidPath(for: &req, .delete, pahtComponent: path, queryItems: queryItems, headerItems: headerItems)
+        buidPath(for: &req, .delete, pahtComponent: path, queryItems: queryItems, headerItems: headerItems, isAuthRequired: isAuthRequired)
         return req
     }
 
-    func put<T: Codable>(_ path: CNPath..., body: T, queryItems: [URLQueryItem] = [], headerItems: [String: String] = [:]) -> Request {
+    func put<T: Codable>(_ path: CNPath..., body: T, queryItems: [URLQueryItem] = [], headerItems: [String: String] = [:], isAuthRequired: Bool) -> Request {
         var req = Request(url: baseURL, headers: baseHeader, body: nil)
-        buidPath(for: &req, .put, pahtComponent: path, queryItems: queryItems, headerItems: headerItems)
+        buidPath(for: &req, .put, pahtComponent: path, queryItems: queryItems, headerItems: headerItems, isAuthRequired: isAuthRequired)
         req.body = body
         return req
     }
 
-    func patch<T: Codable>(_ path: CNPath..., body: T, queryItems: [URLQueryItem] = [], headerItems: [String: String] = [:]) -> Request {
+    func patch<T: Codable>(_ path: CNPath..., body: T, queryItems: [URLQueryItem] = [], headerItems: [String: String] = [:], isAuthRequired: Bool) -> Request {
         var req = Request(url: baseURL, headers: baseHeader, body: nil)
-        buidPath(for: &req, .patch, pahtComponent: path, queryItems: queryItems, headerItems: headerItems)
+        buidPath(for: &req, .patch, pahtComponent: path, queryItems: queryItems, headerItems: headerItems, isAuthRequired: isAuthRequired)
         req.body = body
         return req
     }
 
-    func post<T: Codable>(_ path: CNPath..., body: T, queryItems: [URLQueryItem] = [], headerItems: [String: String] = [:]) -> Request {
+    func post<T: Codable>(_ path: CNPath..., body: T, queryItems: [URLQueryItem] = [], headerItems: [String: String] = [:], isAuthRequired: Bool) -> Request {
         var req = Request(url: baseURL, headers: baseHeader, body: nil)
-        buidPath(for: &req, .post, pahtComponent: path, queryItems: queryItems, headerItems: headerItems)
+        buidPath(for: &req, .post, pahtComponent: path, queryItems: queryItems, headerItems: headerItems, isAuthRequired: isAuthRequired)
         req.body = body
         return req
     }
 
-    func buidPath(for request: inout Request, _ method: HTTPMethod, pahtComponent: [CNPath], queryItems: [URLQueryItem] = [], headerItems: [String: String] = [:]) {
+    func buidPath(for request: inout Request, _ method: HTTPMethod, pahtComponent: [CNPath], queryItems: [URLQueryItem] = [], headerItems: [String: String] = [:], isAuthRequired: Bool) {
         pahtComponent.forEach {
             request.url.prod.appendPathComponent($0.path)
             request.url.dev?.appendPathComponent($0.path)
@@ -58,6 +58,7 @@ public extension APIRoute {
         }
         request.queryItems.append(contentsOf: queryItems)
         request.method = method
+        request.isAuthRequired = isAuthRequired
         request.headers.merge(headerItems) { _, new in new }
     }
 }
