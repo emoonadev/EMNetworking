@@ -31,22 +31,33 @@ public final class EMNetwork {
     private func performRequest<T: Codable>(route: APIRoute) async throws -> ServerResponse<T> {
         var request = route.request
 
-        if let accessTokenConfigurator = configurator?.accessTokenConfigurator, request.isAuthRequired {
-            do {
-                let token = try await accessTokenConfigurator.token()
-                request.headers[accessTokenConfigurator.customKey ?? "Authorization"] = token
-            } catch {
-                if !isRefreshingToken, let refreshToken = accessTokenConfigurator.refreshToken {
-                    isRefreshingToken = true
-                    do {
-                        let newToken = try await refreshToken()
-                        isRefreshingToken = false
-                        request.headers[accessTokenConfigurator.customKey ?? "Authorization"] = newToken
-                    } catch {
-                        isRefreshingToken = false
-                        throw error
-                    }
+        func performRefreshToken() async throws {
+            guard let accessTokenConfigurator = configurator?.accessTokenConfigurator, request.isAuthRequired else { return }
+            
+            if !isRefreshingToken, let refreshToken = accessTokenConfigurator.refreshToken {
+                isRefreshingToken = true
+                
+                do {
+                    let newToken = try await refreshToken()
+                    isRefreshingToken = false
+                    request.headers[accessTokenConfigurator.customKey ?? "Authorization"] = newToken
+                } catch {
+                    isRefreshingToken = false
+                    throw error
                 }
+            }
+        }
+        
+        if let accessTokenConfigurator = configurator?.accessTokenConfigurator, request.isAuthRequired {
+            if accessTokenConfigurator.isValidToken {
+                do {
+                    let token = try await accessTokenConfigurator.token()
+                    request.headers[accessTokenConfigurator.customKey ?? "Authorization"] = token
+                } catch {
+                    try await performRefreshToken()
+                }
+            } else {
+                try await performRefreshToken()
             }
         }
 
@@ -150,8 +161,7 @@ public final class EMNetwork {
 
         if (response as? HTTPURLResponse)?.statusCode == 401, let accessTokenConfigurator = configurator?.accessTokenConfigurator, let refreshToken = accessTokenConfigurator.refreshToken, request.isAuthRequired {
             do {
-                let newToken = try await refreshToken()
-                request.headers[accessTokenConfigurator.customKey ?? "Authorization"] = newToken
+                try await performRefreshToken()
                 return try await performRequest(route: route)
             } catch {
                 throw error

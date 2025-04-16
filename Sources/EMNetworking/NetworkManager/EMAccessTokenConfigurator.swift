@@ -47,6 +47,12 @@ public extension EMConfigurator {
             }
         }
         
+        var isValidToken: Bool {
+            {
+                refreshTokenManager.isValidToken()
+            }()
+        }
+        
         var refreshToken: (() async throws -> String)? {
             {
                 let rawToken = try await refreshTokenManager.refreshToken()
@@ -104,7 +110,7 @@ private class LegacyTokenManager: TokenManaging {
         return legacyToken()
     }
     
-    var isTokenValid: Bool {
-        return true
+    func isValidToken() -> Bool {
+        true
     }
 }
