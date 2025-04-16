@@ -155,16 +155,24 @@ public struct RouteAPI: ExtensionMacro, PeerMacro {
                                 if let paramName = caseMethod.queryParameterName {
                                     requestSyntax.append("let urlQueryItems: [URLQueryItem] = \(paramName).compactMap { URLQueryItem(name: $0, value: String(describing: $1)) }")
                                 }
+                                
+                                if let paramName = caseMethod.headersParameterName {
+                                    requestSyntax.append("let headerItems: [String: String] = \(paramName).compactMapValues { String(describing: $0) }")
+                                }
 
-                                requestSyntax.append("return get(\(transformParameterString(path, asString: true)), queryItems: \(caseMethod.queryParameterName != nil ? "urlQueryItems" : "[]"))")
+                                requestSyntax.append("return get(\(transformParameterString(path, asString: true)), queryItems: \(caseMethod.queryParameterName != nil ? "urlQueryItems" : "[]"), headerItems: \(caseMethod.headersParameterName != nil ? "headerItems" : "[:]"), isAuthRequired: \(caseMethod.isAuthRequired))")
                             } else {
                                 requestSyntax.append("case .\(caseMethod.name):")
 
                                 if let paramName = caseMethod.queryParameterName {
                                     requestSyntax.append("let urlQueryItems: [URLQueryItem] = \(paramName).compactMap { URLQueryItem(name: $0, value: String(describing: $1)) }")
                                 }
+                                
+                                if let paramName = caseMethod.headersParameterName {
+                                    requestSyntax.append("let headerItems: [String: String] = \(paramName).compactMapValues { String(describing: $0) }")
+                                }
 
-                                requestSyntax.append("return get(queryItems: \(caseMethod.queryParameterName != nil ? "urlQueryItems" : "[]"))")
+                                requestSyntax.append("return get(queryItems: \(caseMethod.queryParameterName != nil ? "urlQueryItems" : "[]"), headerItems: \(caseMethod.headersParameterName != nil ? "headerItems" : "[:]"), isAuthRequired: \(caseMethod.isAuthRequired))")
                             }
                         } else {
                             requestSyntax.append("case let .\(caseMethod.name)(\(caseMethod.parameters.compactMap { $0.name }.joined(separator: ", "))):")
