@@ -46,8 +46,6 @@ public final class EMNetwork {
                         isRefreshingToken = false
                         throw error
                     }
-                } else {
-                    throw error
                 }
             }
         }
