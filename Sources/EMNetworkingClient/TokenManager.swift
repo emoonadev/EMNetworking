@@ -29,6 +29,10 @@ final class KeychainTokenManager: TokenManaging {
         return "newToken"
     }
     
+    func isValidToken() -> Bool {
+        true
+    }
+    
     // MARK: - Keychain helpers
     
     private func saveToKeychain(value: String, forKey key: String) throws {
