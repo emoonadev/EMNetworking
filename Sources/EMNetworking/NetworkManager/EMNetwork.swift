@@ -11,6 +11,7 @@ public final class EMNetwork {
     let configurator: EMConfigurator?
     let serverResponseParser: ServerResponseParser
     let logHandler: LogHandler?
+    private var isRefreshingToken: Bool = false
 
     public init(configurator: EMConfigurator? = nil, serverResponseParser: ServerResponseParser = DefaultServerResponseParser(), logHandler: LogHandler? = nil) {
         self.configurator = configurator
@@ -30,14 +31,21 @@ public final class EMNetwork {
     private func performRequest<T: Codable>(route: APIRoute) async throws -> ServerResponse<T> {
         var request = route.request
 
-         if let accessTokenConfigurator = configurator?.accessTokenConfigurator {
+        if let accessTokenConfigurator = configurator?.accessTokenConfigurator {
             do {
                 let token = try await accessTokenConfigurator.token()
                 request.headers[accessTokenConfigurator.customKey ?? "Authorization"] = token
             } catch {
-                if let refreshToken = accessTokenConfigurator.refreshToken {
-                    let newToken = try await refreshToken()
-                    request.headers[accessTokenConfigurator.customKey ?? "Authorization"] = newToken
+                if !isRefreshingToken, let refreshToken = accessTokenConfigurator.refreshToken {
+                    isRefreshingToken = true
+                    do {
+                        let newToken = try await refreshToken()
+                        isRefreshingToken = false
+                        request.headers[accessTokenConfigurator.customKey ?? "Authorization"] = newToken
+                    } catch {
+                        isRefreshingToken = false
+                        throw error
+                    }
                 } else {
                     throw error
                 }

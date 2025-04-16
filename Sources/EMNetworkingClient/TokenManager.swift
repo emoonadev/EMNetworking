@@ -25,12 +25,8 @@ final class KeychainTokenManager: TokenManaging {
     }
     
     func refreshToken() async throws -> String {
-        // Your API refresh implementation here
-        let newToken = UUID().uuidString
-        try saveToKeychain(value: newToken, forKey: accessTokenKey)
-        let expiration = Date().addingTimeInterval(48 * 3600).timeIntervalSince1970
-        try saveToKeychain(value: String(expiration), forKey: expirationKey)
-        return newToken
+
+        return "newToken"
     }
     
     // MARK: - Keychain helpers
