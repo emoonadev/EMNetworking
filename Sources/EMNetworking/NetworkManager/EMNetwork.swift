@@ -40,7 +40,7 @@ public final class EMNetwork {
                 do {
                     let newToken = try await refreshToken()
                     isRefreshingToken = false
-                    request.headers[accessTokenConfigurator.customKey ?? "Authorization"] = accessTokenConfigurator.authenticationType.format(token: newToken)
+                    request.headers[accessTokenConfigurator.customKey ?? "Authorization"] = newToken
                 } catch {
                     isRefreshingToken = false
                     throw error
@@ -50,7 +50,7 @@ public final class EMNetwork {
         
         if let accessTokenConfigurator = configurator?.accessTokenConfigurator, request.isAuthRequired {
             if accessTokenConfigurator.isTokenValid || isIgnoreRefreshing {
-                request.headers[accessTokenConfigurator.customKey ?? "Authorization"] = accessTokenConfigurator.authenticationType.format(token: accessTokenConfigurator.token)
+                request.headers[accessTokenConfigurator.customKey ?? "Authorization"] = accessTokenConfigurator.token
             } else {
                 if !isRefreshingToken {
                     try await performRefreshToken()
