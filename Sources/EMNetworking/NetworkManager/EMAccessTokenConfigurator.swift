@@ -41,7 +41,7 @@ public extension EMConfigurator {
         }
         
         var token: String {
-            refreshTokenManager.token
+            authenticationType.format(token: refreshTokenManager.token)
         }
         
         var isTokenValid: Bool {
