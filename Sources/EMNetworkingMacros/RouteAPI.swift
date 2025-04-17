@@ -84,7 +84,7 @@ public struct RouteAPI: ExtensionMacro, PeerMacro {
             }
 
             cases.append(
-                CaseMethod(name: caseName, method: methodStr, path: path, isAuthRequired: isAuthRequired ?? "false", parameters: parameters ?? [], queryParameterName: queryItemsParamName, headersParameterName: headerItemsParamName)
+                CaseMethod(name: caseName, method: methodStr, path: path, isAuthRequired: isAuthRequired ?? "true", parameters: parameters ?? [], queryParameterName: queryItemsParamName, headersParameterName: headerItemsParamName)
             )
         }
 
