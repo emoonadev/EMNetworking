@@ -4,9 +4,9 @@ import EMNetworking
 
 Task {
     do {
-//        let res: Int? = try await networkManager.perform(route: AppAPI.Community.log(header: .init(dictionaryLiteral: ("TinyDeviceID", IgnoreValue.ignore))))
-//        
-//        print("Response \(String(describing: res))")
+        let res: Int? = try await networkManager.perform(route: AppAPI.Account.register(.init(email: "sdafadfdfc@tt.it", password: "edsfdweasd", userType: 1)))
+//
+        print("Response \(String(describing: res))")
     } catch {}
 }
 
