@@ -122,7 +122,7 @@ public struct RouteAPI: ExtensionMacro, PeerMacro {
 
             try cases.forEach { caseMethod in
                 switch caseMethod.method {
-                    case "post", "patch", "put":
+                    case "post", "patch", "put", "delete":
                         if caseMethod.parameters.isEmpty {
                             throw DeclError.bodyParamMissingForCase(caseMethod.name)
                         } else {
