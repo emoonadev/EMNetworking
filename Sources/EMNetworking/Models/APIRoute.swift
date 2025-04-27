@@ -22,9 +22,10 @@ public extension APIRoute {
         return req
     }
 
-    func delete(_ path: CNPath..., queryItems: [URLQueryItem] = [], headerItems: [String: String] = [:], isAuthRequired: Bool) -> Request {
+    func delete<T: Codable>(_ path: CNPath..., body: T, queryItems: [URLQueryItem] = [], headerItems: [String: String] = [:], isAuthRequired: Bool) -> Request {
         var req = Request(url: baseURL, headers: baseHeader, body: nil)
         buidPath(for: &req, .delete, pahtComponent: path, queryItems: queryItems, headerItems: headerItems, isAuthRequired: isAuthRequired)
+        req.body = body
         return req
     }
 
