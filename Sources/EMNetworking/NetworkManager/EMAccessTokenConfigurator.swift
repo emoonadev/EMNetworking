@@ -63,11 +63,9 @@ public extension EMConfigurator {
     }
     
     struct Header {
-        var contentType: ContentType
         var headers: () -> [String: String]
 
-        public init(contentType: ContentType, headers: @escaping () -> [String: String] = { [String: String]() }) {
-            self.contentType = contentType
+        public init(headers: @escaping () -> [String: String] = { [String: String]() }) {
             self.headers = headers
         }
     }

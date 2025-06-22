@@ -61,5 +61,9 @@ public extension APIRoute {
         request.method = method
         request.isAuthRequired = isAuthRequired
         request.headers.merge(headerItems) { _, new in new }
+        
+        if let contentType = request.url.contentType {
+            request.headers["Content-Type"] = contentType.value
+        }
     }
 }

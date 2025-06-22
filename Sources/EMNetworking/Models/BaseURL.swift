@@ -12,12 +12,14 @@ public struct BaseURL: ExpressibleByStringInterpolation {
     public var dev: URL?
     public var staging: URL?
     public var test: URL?
+    public var contentType: ContentType = .json
     
-    public init(_ prod: URL, dev: URL? = nil, staging: URL? = nil, test: URL? = nil) {
+    public init(_ prod: URL, dev: URL? = nil, staging: URL? = nil, test: URL? = nil, contentType: ContentType = .json) {
         self.prod = prod
         self.dev = dev
         self.staging = staging
         self.test = test
+        self.contentType = contentType
     }
     
     public init(stringLiteral value: String) {
