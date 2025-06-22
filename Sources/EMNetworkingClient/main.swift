@@ -4,9 +4,9 @@ import EMNetworking
 
 Task {
     do {
-//        let res: Int? = try await networkManager.perform(route: AppAPI.Community.log(header: .init(dictionaryLiteral: ("TinyDeviceID", IgnoreValue.ignore))))
+        let res: Int? = try await networkManager.perform(route: AppAPI.Community.fsdfc(.init()))
 //        
-//        print("Response \(String(describing: res))")
+        print("Response \(String(describing: res))")
     } catch {}
 }
 

@@ -61,10 +61,11 @@ public final class EMNetwork {
         }
 
         if let header = configurator?.headerConfigurator {
-            request.headers["Content-Type"] = header.contentType.value
             request.headers.merge(header.headers()) { old, _ in old }
             request.headers = request.headers.filter { $0.value != IgnoreValue.ignore }
         }
+        
+        request.headers["Content-Type"] = route.request.url.contentType.value
 
         if let urlQueryParametersConfigurator = configurator?.urlQueryParametersConfigurator {
             request.queryItems.insert(contentsOf: urlQueryParametersConfigurator.parameters(), at: 0)
@@ -85,15 +86,14 @@ public final class EMNetwork {
             request.url.prod
         }
 
-        if let headerConfigurator = configurator?.headerConfigurator, case .formURLEncoded = headerConfigurator.contentType {
+        if case .formURLEncoded = route.request.url.contentType {
             finalURL = URL(string: finalURL.absoluteString + "/")!
         }
 
         if !request.queryItems.isEmpty {
             var urlComponents = URLComponents(url: finalURL, resolvingAgainstBaseURL: false)!
             
-            if let headerConfigurator = configurator?.headerConfigurator,
-               case let .formURLEncoded(alphabetizeKeyValuePairs, arrayEncoding, boolEncoding, dataEncoding, dateEncoding, keyEncoding, spaceEncoding, allowedCharacters) = headerConfigurator.contentType {
+            if case let .formURLEncoded(alphabetizeKeyValuePairs, arrayEncoding, boolEncoding, dataEncoding, dateEncoding, keyEncoding, spaceEncoding, allowedCharacters) = route.request.url.contentType {
                 let encoder = URLEncodedFormEncoder(
                     alphabetizeKeyValuePairs: alphabetizeKeyValuePairs,
                     arrayEncoding: arrayEncoding,
@@ -127,7 +127,7 @@ public final class EMNetwork {
         if let body = request.body {
             let jsonSerialization: Data
 
-            if let headerConfigurator = configurator?.headerConfigurator, case let .formURLEncoded(alphabetizeKeyValuePairs, arrayEncoding, boolEncoding, dataEncoding, dateEncoding, keyEncoding, spaceEncoding, allowedCharacters) = headerConfigurator.contentType {
+            if case let .formURLEncoded(alphabetizeKeyValuePairs, arrayEncoding, boolEncoding, dataEncoding, dateEncoding, keyEncoding, spaceEncoding, allowedCharacters) = route.request.url.contentType {
                 jsonSerialization = try URLEncodedFormEncoder(alphabetizeKeyValuePairs: alphabetizeKeyValuePairs, arrayEncoding: arrayEncoding, boolEncoding: boolEncoding, dataEncoding: dataEncoding, dateEncoding: dateEncoding, keyEncoding: keyEncoding, spaceEncoding: spaceEncoding, allowedCharacters: allowedCharacters).encode(body)
             } else {
                 jsonSerialization = try JSONSerialization.data(withJSONObject: try DictionaryEncoder.encode(body))

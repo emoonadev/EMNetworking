@@ -80,7 +80,7 @@ enum AppAPI {
 //        }
 //    }
     
-    @RouteAPI("community/api/", baseURL: BaseURL("https://www.tinytap.com/", dev: "https://www.dev.tinytap.com/"))
+    @RouteAPI("community/api/", baseURL: BaseURL("https://www.tinytap.com/", dev: "https://www.dev.tinytap.com/", contentType: .formURLEncoded(spaceEncoding: .percentEscaped, allowedCharacters: .afURLQueryAllowed)))
     enum Community {
 //        @HTTP(.post, path: "login", isAuthRequired: true) case login(LoginReq, header: HeaderItems)
         @HTTP(.delete, path: "login", "erwefwed") case fsdfc(LoginReq)

@@ -75,7 +75,7 @@ nonisolated(unsafe) let accessToken = EMConfigurator.AccessToken(
     refreshTokenManager: tokenManager
 )
 
-nonisolated(unsafe) let defaultHeader = EMConfigurator.Header(contentType: .formURLEncoded(spaceEncoding: .percentEscaped, allowedCharacters: .afURLQueryAllowed)) {
+nonisolated(unsafe) let defaultHeader = EMConfigurator.Header {
     var dic = [String: String]()
     dic["User-Agent"] = "TinyTap/4.5.9 (iPhone; iOS 17.4; Scale/3.00)"
     dic["Accept-Language"] = "en"
@@ -105,3 +105,4 @@ let networkManager = EMNetwork(configurator: EMConfigurator(accessTokenConfigura
                                serverResponseParser: TTServerResponseParser(),
                                logHandler: logHandler)
 
+//.formURLEncoded(spaceEncoding: .percentEscaped, allowedCharacters: .afURLQueryAllowed)
