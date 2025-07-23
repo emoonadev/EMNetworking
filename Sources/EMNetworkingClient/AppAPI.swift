@@ -9,6 +9,16 @@ import EMNetworking
 import Foundation
 
 enum AppAPI {
+    #BaseURL(BaseURL("https://www.tinytap.com", dev: "https://development.tinytap.it/", staging: "https://staging.tinytap.it/")) {
+        
+        @RouteAPI("account/api/")
+        enum Account {
+            @HTTP(.get, path: "email_lookup") case emailLookup(dto: EmailLookupReq)
+        }
+
+    }
+    
+    
 //    #BaseURL("https://www.tinytap.com/") {
 //
 //        @RouteAPI("community/api/")
@@ -80,12 +90,60 @@ enum AppAPI {
 //        }
 //    }
     
-    @RouteAPI("community/api/", baseURL: BaseURL("https://www.tinytap.com/", dev: "https://www.dev.tinytap.com/", contentType: .formURLEncoded(spaceEncoding: .percentEscaped, allowedCharacters: .afURLQueryAllowed)))
-    enum Community {
-//        @HTTP(.post, path: "login", isAuthRequired: true) case login(LoginReq, header: HeaderItems)
-        @HTTP(.delete, path: "login", "erwefwed") case fsdfc(LoginReq)
-        
+//    @RouteAPI("community/api/", baseURL: BaseURL("https://www.tinytap.com/", dev: "https://www.dev.tinytap.com/", contentType: .formURLEncoded(spaceEncoding: .percentEscaped, allowedCharacters: .afURLQueryAllowed)))
+//    enum Community {
+////        @HTTP(.post, path: "login", isAuthRequired: true) case login(LoginReq, header: HeaderItems)
+//        @HTTP(.delete, path: "login", "erwefwed") case fsdfc(LoginReq)
+//        
+//        @HTTP(.post, path: "user", "subaccount/")
+//        case createSubAccount(CreateOrUpdateSubAccountReq)
+//    }
+//    
+//    #BaseURL(BaseURL("https://api.tinytap.com/api/v1/",
+//                     dev: "https://api-development.tinytap.it/api/v1/",
+//                     staging: "https://api.tinytap.it/api/v1/")) {
+//        
+//        @RouteAPI("client-config/")
+//        enum ClientConfig {
+//            @HTTP(.get, isAuthRequired: false)
+//            case getClientConfig
+//        }
+//        
+//        @RouteAPI("accounts/")
+//        enum Accounts {
+//            @HTTP(.post, path: "login/", isAuthRequired: false)
+//            case login(LoginReq)
+//            
+//            @HTTP(.post, path: "login", "social/", isAuthRequired: false)
+//            case loginSocial(LoginReq)
+//            
+//
+//            @HTTP(.get, path: "profile", "details/")
+//            case profileDetails
+//            
+//            @HTTP(.get, path: "profile", "details/")
+//            case profileDetailsByID(header: HeaderItems)
+//            
+//            @HTTP(.get, path: "profile", "details", "permissions/")
+//            case permissions
+//            
+//            @HTTP(.post, path: "user", "subaccount/")
+//            case createSubAccount(CreateOrUpdateSubAccountReq)
+//            
+//            @HTTP(.patch, path: "user", "subaccount/")
+//            case updateSubAccount(CreateOrUpdateSubAccountReq)
+//            
+//        }
+//    }
 
-    }
+}
 
+@EMCodable(codingKeyStrategy: .snakeCase)
+struct CreateOrUpdateSubAccountReq {
+    let firstName: String
+    var lastName: String = ""
+    let color: Int
+    let ageGroupID: Int
+    let languageID: Int
+    let subaccountUserID: Int?
 }

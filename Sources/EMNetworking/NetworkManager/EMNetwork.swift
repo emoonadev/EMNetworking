@@ -148,7 +148,10 @@ public final class EMNetwork {
             session = URLSession.shared
         }
         
+        let startTime = CFAbsoluteTimeGetCurrent()
         let (data, response) = try await session.data(for: urlRequest)
+        let endTime = CFAbsoluteTimeGetCurrent()
+        let responseTimeMillis = Int((endTime - startTime) * 1000)
 
         var httpHeaders = [String: String]()
 
@@ -156,7 +159,7 @@ public final class EMNetwork {
             httpHeaders[String(describing: $0.key)] = String(describing: $0.value)
         }
 
-        logHandler?.inputHandler?(LogHandler.InputLog(httpMethod: request.method, requestURL: urlRequest.url, body: data, httpHeaders: httpHeaders, statusCode: (response as? HTTPURLResponse)?.statusCode ?? -1))
+        logHandler?.inputHandler?(LogHandler.InputLog(httpMethod: request.method, requestURL: urlRequest.url, body: data, httpHeaders: httpHeaders, statusCode: (response as? HTTPURLResponse)?.statusCode ?? -1, responseTimeMillis: responseTimeMillis))
 
         do {
             let serverResponse: ServerResponse<T> = try serverResponseParser.parse(data: data)
