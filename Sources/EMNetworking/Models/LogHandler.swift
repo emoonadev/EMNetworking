@@ -32,9 +32,11 @@ public struct LogHandler {
     
     public class InputLog: Log {
         public var statusCode: Int
+        public var responseTimeMillis: Int
         
-        init(httpMethod: HTTPMethod, requestURL: URL? = nil, body: Data? = nil, httpHeaders: [String : String]? = nil, statusCode: Int) {
+        init(httpMethod: HTTPMethod, requestURL: URL? = nil, body: Data? = nil, httpHeaders: [String : String]? = nil, statusCode: Int, responseTimeMillis: Int) {
             self.statusCode = statusCode
+            self.responseTimeMillis = responseTimeMillis
             super.init(httpMethod: httpMethod, requestURL: requestURL, body: body, httpHeaders: httpHeaders)
         }
     }
