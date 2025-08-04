@@ -13,13 +13,15 @@ public struct EMConfigurator {
     let headerConfigurator: Header?
     let urlQueryParametersConfigurator: URLQueryParameter?
     let environmentConfigurator: Environment?
+    let certificatePinningConfigurator: CertificatePinning?
 
-    public init(urlSessionConfiguration: URLSessionConfiguration = URLSessionConfiguration.default, accessTokenConfigurator: AccessToken?, headerConfigurator: Header?, urlQueryParametersConfigurator: URLQueryParameter?, environmentConfigurator: Environment? = .init(env: { .prod })) {
+    public init(urlSessionConfiguration: URLSessionConfiguration = URLSessionConfiguration.default, accessTokenConfigurator: AccessToken?, headerConfigurator: Header?, urlQueryParametersConfigurator: URLQueryParameter?, environmentConfigurator: Environment? = .init(env: { .prod }), certificatePinningConfigurator: CertificatePinning? = nil) {
         self.urlSessionConfiguration = urlSessionConfiguration
         self.accessTokenConfigurator = accessTokenConfigurator
         self.headerConfigurator = headerConfigurator
         self.urlQueryParametersConfigurator = urlQueryParametersConfigurator
         self.environmentConfigurator = environmentConfigurator
+        self.certificatePinningConfigurator = certificatePinningConfigurator
     }
 }
 

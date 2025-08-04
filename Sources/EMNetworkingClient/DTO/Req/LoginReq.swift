@@ -10,5 +10,7 @@ import EMNetworking
 
 @EMCodable(codingKeyStrategy: .snakeCase)
 struct LoginReq {
-    var languageID: Int?
+    var languageID: Int = 1
+    var auth: String = "mickael@tinytap.com"
+    var password: String = "capoeira"
 }

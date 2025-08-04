@@ -9,7 +9,24 @@ import EMNetworking
 import Foundation
 
 enum AppAPI {
-    #BaseURL(BaseURL("https://www.tinytap.com", dev: "https://development.tinytap.it/", staging: "https://staging.tinytap.it/")) {
+    
+    #BaseURL(BaseURL("https://www.tinytap.com",
+                     dev: "https://development.tinytap.it/",
+                     staging: "https://staging.tinytap.it/",
+                     contentType: .formURLEncoded(spaceEncoding: .percentEscaped, allowedCharacters: .afURLQueryAllowed))) {
+        
+        @RouteAPI("community/api/")
+        enum Community {
+            @HTTP(.post, path: "login") case login(LoginReq)
+        }
+        
+        
+    }
+    
+    #BaseURL(BaseURL("https://www.tinytap.com",
+                     dev: "https://development.tinytap.it/",
+                     staging: "https://staging.tinytap.it/",
+                     contentType: .formURLEncoded(spaceEncoding: .percentEscaped, allowedCharacters: .afURLQueryAllowed))) {
         
         @RouteAPI("account/api/")
         enum Account {
@@ -98,43 +115,43 @@ enum AppAPI {
 //        @HTTP(.post, path: "user", "subaccount/")
 //        case createSubAccount(CreateOrUpdateSubAccountReq)
 //    }
-//    
-//    #BaseURL(BaseURL("https://api.tinytap.com/api/v1/",
-//                     dev: "https://api-development.tinytap.it/api/v1/",
-//                     staging: "https://api.tinytap.it/api/v1/")) {
-//        
-//        @RouteAPI("client-config/")
-//        enum ClientConfig {
-//            @HTTP(.get, isAuthRequired: false)
-//            case getClientConfig
-//        }
-//        
-//        @RouteAPI("accounts/")
-//        enum Accounts {
-//            @HTTP(.post, path: "login/", isAuthRequired: false)
-//            case login(LoginReq)
-//            
-//            @HTTP(.post, path: "login", "social/", isAuthRequired: false)
-//            case loginSocial(LoginReq)
-//            
-//
-//            @HTTP(.get, path: "profile", "details/")
-//            case profileDetails
-//            
-//            @HTTP(.get, path: "profile", "details/")
-//            case profileDetailsByID(header: HeaderItems)
-//            
-//            @HTTP(.get, path: "profile", "details", "permissions/")
-//            case permissions
-//            
-//            @HTTP(.post, path: "user", "subaccount/")
-//            case createSubAccount(CreateOrUpdateSubAccountReq)
-//            
-//            @HTTP(.patch, path: "user", "subaccount/")
-//            case updateSubAccount(CreateOrUpdateSubAccountReq)
-//            
-//        }
-//    }
+    
+    #BaseURL(BaseURL("https://api.tinytap.com/api/v1/",
+                     dev: "https://api-development.tinytap.it/api/v1/",
+                     staging: "https://api.tinytap.it/api/v1/")) {
+        
+        @RouteAPI("client-config/")
+        enum ClientConfig {
+            @HTTP(.get, isAuthRequired: false)
+            case getClientConfig
+        }
+        
+        @RouteAPI("accounts/")
+        enum Accounts {
+            @HTTP(.post, path: "login/", isAuthRequired: false)
+            case login(LoginReq)
+            
+            @HTTP(.post, path: "login", "social/", isAuthRequired: false)
+            case loginSocial(LoginReq)
+            
+
+            @HTTP(.get, path: "profile", "details/")
+            case profileDetails
+            
+            @HTTP(.get, path: "profile", "details/")
+            case profileDetailsByID(header: HeaderItems)
+            
+            @HTTP(.get, path: "profile", "details", "permissions/")
+            case permissions
+            
+            @HTTP(.post, path: "user", "subaccount/")
+            case createSubAccount(CreateOrUpdateSubAccountReq)
+            
+            @HTTP(.patch, path: "user", "subaccount/")
+            case updateSubAccount(CreateOrUpdateSubAccountReq)
+            
+        }
+    }
 
 }
 
