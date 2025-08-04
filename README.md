@@ -8,6 +8,17 @@ dependencies: [
 ]
 ```
 
+## Using
+
+```swift
+do {
+    let userProfile: User.Profile = try await networkManager.perform(route: MyAPI.Users.profile(userID: "123"))
+    //...
+} catch error {
+    //...
+}
+```
+
 ## 🚀 Quick Start
 
 ### 1. Define Your API Routes
