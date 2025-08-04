@@ -12,11 +12,13 @@ public final class EMNetwork {
     let serverResponseParser: ServerResponseParser
     let logHandler: LogHandler?
     private var isRefreshingToken: Bool = false
+    private let sessionDelegate: EMNetworkSessionDelegate?
 
     public init(configurator: EMConfigurator? = nil, serverResponseParser: ServerResponseParser = DefaultServerResponseParser(), logHandler: LogHandler? = nil) {
         self.configurator = configurator
         self.logHandler = logHandler
         self.serverResponseParser = serverResponseParser
+        self.sessionDelegate = EMNetworkSessionDelegate(certificatePinning: configurator?.certificatePinningConfigurator)
     }
 
     public func perform<Model: Codable>(route: APIRoute, isIgnoreRefreshing: Bool = false) async throws -> Model? {
@@ -143,9 +145,17 @@ public final class EMNetwork {
         let session: URLSession
 
         if let urlSessionConfiguration = configurator?.urlSessionConfiguration {
-            session = URLSession(configuration: urlSessionConfiguration)
+            if configurator?.certificatePinningConfigurator != nil {
+                session = URLSession(configuration: urlSessionConfiguration, delegate: sessionDelegate, delegateQueue: nil)
+            } else {
+                session = URLSession(configuration: urlSessionConfiguration)
+            }
         } else {
-            session = URLSession.shared
+            if configurator?.certificatePinningConfigurator != nil {
+                session = URLSession(configuration: .default, delegate: sessionDelegate, delegateQueue: nil)
+            } else {
+                session = URLSession.shared
+            }
         }
         
         let startTime = CFAbsoluteTimeGetCurrent()

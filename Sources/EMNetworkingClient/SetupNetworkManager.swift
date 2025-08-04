@@ -41,7 +41,7 @@ public struct TTServerResponseParser: ServerResponseParser {
 nonisolated(unsafe)
 let logHandler = LogHandler { log in
     var logs = [String]()
-    logs.append("⬅️ \(log.httpMethod.rawValue.uppercased()) \(log.requestURL?.absoluteString ?? "")")
+    logs.append("⬅️ \(log.httpMethod.rawValue.uppercased()) - \(log.responseTimeMillis) - \(log.requestURL?.absoluteString ?? "")")
 
     if let headers = log.httpHeaders {
         logs.append("Headers: \(String(describing: headers))")
@@ -80,6 +80,8 @@ nonisolated(unsafe) let defaultHeader = EMConfigurator.Header {
     dic["User-Agent"] = "TinyTap/4.5.9 (iPhone; iOS 17.4; Scale/3.00)"
     dic["Accept-Language"] = "en"
     dic["TinyDeviceID"] = "BB662BE1-0399-47F0-99EF-50BB36222AAD"
+    dic["x-tt-api-key"] = "019104467e9c7ab7a158e6d4e694a4ef"
+    dic["x-dt"] = "98027366fa04d2328c5efd557d3c95b60e384208"
     return dic
 }
 

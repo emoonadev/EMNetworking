@@ -4,9 +4,9 @@ import EMNetworking
 
 Task {
     do {
-//        let res: Int? = try await networkManager.perform(route: AppAPI.Accounts.createSubAccount(.init(firstName: "Firstname", color: 1, ageGroupID: 3, languageID: 3, subaccountUserID: nil)))
+        let res: Int? = try await networkManager.perform(route: AppAPI.Account.emailLookup(dto: .init(auth: "assafluz+7878@gmail.com")))
 //
-//        print("Response \(String(describing: res))")
+        print("Response \(String(describing: res))")
     } catch {}
 }
 
