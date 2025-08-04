@@ -4,7 +4,7 @@
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/emoonadev/EMNetworking.git", from: "1.3.0")
+    .package(url: "https://github.com/emoonadev/EMNetworking.git", from: "1.5.0")
 ]
 ```
 
