@@ -1,5 +1,15 @@
 ## 🚀 Quick Start
 
+## 📦 Installation
+
+### Swift Package Manager
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/emoonadev/EMNetworking.git", from: "1.3.0")
+]
+```
+
 ### 1. Define Your API Routes
 ```swift
 import EMNetworking
