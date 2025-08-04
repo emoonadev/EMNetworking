@@ -16,9 +16,9 @@ enum BaseURL: DeclarationMacro {
     static func expansion(of node: some FreestandingMacroExpansionSyntax, in _: some MacroExpansionContext) throws -> [DeclSyntax] {
         if let baseURLParameter = node.arguments.first?.expression, let block = node.trailingClosure {
             if let baseURL = baseURLParameter.as(StringLiteralExprSyntax.self)?.representedLiteralValue {
-                block.statements.compactMap { $0.item.asProtocol(DeclGroupSyntax.self) }.map { replacingRouteAPIAttribute(of: $0, parameterURL: baseURL) }
+                block.statements.compactMap { $0.item.asProtocol(DeclGroupSyntax.self) }.map { replacingControllerAttribute(of: $0, parameterURL: baseURL) }
             } else if let expression = node.arguments.first?.expression.as(FunctionCallExprSyntax.self), expression.calledExpression.as(DeclReferenceExprSyntax.self)?.baseName.identifier?.name == "BaseURL" {
-                block.statements.compactMap { $0.item.asProtocol(DeclGroupSyntax.self) }.map { replacingRouteAPIAttribute(of: $0, parameterURL: "\(node.arguments)") }
+                block.statements.compactMap { $0.item.asProtocol(DeclGroupSyntax.self) }.map { replacingControllerAttribute(of: $0, parameterURL: "\(node.arguments)") }
             } else {
                 []
             }
@@ -27,12 +27,12 @@ enum BaseURL: DeclarationMacro {
         }
     }
 
-    static func replacingRouteAPIAttribute(of decl: DeclGroupSyntax, parameterURL: String) -> DeclSyntax {
+    static func replacingControllerAttribute(of decl: DeclGroupSyntax, parameterURL: String) -> DeclSyntax {
         var newDecl = decl
         for i in newDecl.attributes.indices {
             guard case var .attribute(attr) = newDecl.attributes[i],
                   let attrName = attr.attributeName.as(IdentifierTypeSyntax.self)?.name.text,
-                  attrName == "RouteAPI",
+                  attrName == "Controller",
                   case let .argumentList(argsList) = attr.arguments,
                   argsList.count == 1
             else {

@@ -17,7 +17,7 @@ import EMNetworking
 enum MyAPI {
     #BaseURL("https://api.example.com") {
         
-        @RouteAPI("users/")
+        @Controller("users/")
         enum Users {
             @HTTP(.get, path: "profile", .parameter("userID"))
             case profile(userID: String)
@@ -29,7 +29,7 @@ enum MyAPI {
             case updateProfile(UpdateProfileRequest)
         }
         
-        @RouteAPI("auth/")
+        @Controller("auth/")
         enum Auth {
             @HTTP(.post, path: "login", isAuthRequired: false)
             case login(LoginRequest)
@@ -41,7 +41,7 @@ enum MyAPI {
              staging: "https://staging-api.example.com",
              contentType: .formURLEncoded()) {
         
-        @RouteAPI("forms/")
+        @Controller("forms/")
         enum Forms {
             @HTTP(.post, path: "submit")
             case submitForm(FormData)
@@ -180,10 +180,10 @@ do {
 }
 ```
 
-#### @RouteAPI - Group Related Endpoints
+#### @Controller - Group Related Endpoints
 
 ```swift
-@RouteAPI("api/v2/users/")
+@Controller("api/v2/users/")
 enum Users {
     // User endpoints with /api/v2/users/ prefix
 }

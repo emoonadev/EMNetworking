@@ -8,10 +8,10 @@ import Foundation
 public macro HTTP(_ method: HTTPMethod, path: CNPath..., isAuthRequired: Bool = true) = #externalMacro(module: "EMNetworkingMacros", type: "HTTPMethodMacro")
 
 @attached(extension, conformances: APIRoute, names: arbitrary)
-public macro RouteAPI(_ controller: CNPath, baseURL: BaseURL) = #externalMacro(module: "EMNetworkingMacros", type: "RouteAPI")
+public macro Controller(_ controller: CNPath, baseURL: BaseURL) = #externalMacro(module: "EMNetworkingMacros", type: "Controller")
 
 @attached(peer, conformances: APIRoute, names: arbitrary)
-public macro RouteAPI(_ name: CNPath) = #externalMacro(module: "EMNetworkingMacros", type: "RouteAPI")
+public macro Controller(_ name: CNPath) = #externalMacro(module: "EMNetworkingMacros", type: "Controller")
 
 @freestanding(declaration, names: named(baseURL), arbitrary)
 public macro BaseURL(_ baseURL: BaseURL, _ block: () -> Void) = #externalMacro(module: "EMNetworkingMacros", type: "BaseURL")

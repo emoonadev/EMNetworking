@@ -9,7 +9,7 @@ import SwiftSyntaxMacros
 struct EMNetworkingPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
         HTTPMethodMacro.self,
-        RouteAPI.self,
+        Controller.self,
         BaseURL.self,
         EMCodable.self,
         EMCodingKey.self,
