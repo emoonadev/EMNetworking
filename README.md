@@ -1,7 +1,7 @@
 ## 🚀 Quick Start
 
 ### 1. Define Your API Routes
-```
+```swift
 import EMNetworking
 
 enum MyAPI {
@@ -49,7 +49,7 @@ enum MyAPI {
 }
 ```
 ### 2. Configure Network Manager
-```
+```swift
 // Token Manager
 class MyTokenManager: TokenManaging {
     var token: String { 
@@ -144,7 +144,7 @@ let networkManager = EMNetwork(
 )
 ```
 ### 3. Make Network Requests
-```
+```swift
 // Simple request with response
 let userProfile: UserProfile = try await networkManager.perform(
     route: MyAPI.Users.profile(userID: "123")
@@ -169,7 +169,7 @@ do {
 ### Macro-Based Route Definition
 
 #### @BaseURL - Multi-Environment Support
-```
+```swift
 #BaseURL("https://api.example.com",
          dev: "https://dev-api.example.com",
          staging: "https://staging-api.example.com",
@@ -181,7 +181,7 @@ do {
 
 #### @RouteAPI - Group Related Endpoints
 
-```
+```swift
 @RouteAPI("api/v2/users/")
 enum Users {
     // User endpoints with /api/v2/users/ prefix
@@ -190,7 +190,7 @@ enum Users {
 
 #### @HTTP - Define Individual Endpoints
 
-```
+```swift
 // GET with path parameters
 @HTTP(.get, path: "profile", .parameter("id"))
 case userById(id: String)
@@ -208,7 +208,7 @@ case publicData
 case userPosts(id: String)
 ```
 ### Authentication Types
-```
+```swift
 // Bearer Token (most common)
 .bearer  // "Bearer your-token"
 
@@ -224,7 +224,7 @@ case userPosts(id: String)
 
 ### Content Types & Form Encoding
 
-```
+```swift
 // JSON (default)
 contentType: .json
 
@@ -246,7 +246,7 @@ contentType: .formURLEncoded(
 ### Certificate Pinning
 
 #### Public Key Pinning (Recommended)
-```
+```swift
 // Flexible - survives certificate renewals
 let publicKeyPinning = DefaultCertificatePinning.publicKeyPinning(
     withCertificateNames: ["server_cert"]
@@ -255,7 +255,7 @@ let publicKeyPinning = DefaultCertificatePinning.publicKeyPinning(
 
 #### Certificate Pinning
 
-```
+```swift
 // Strict - requires app update on cert renewal
 let certificatePinning = DefaultCertificatePinning.certificatePinning(
     withCertificateNames: ["server_cert"]
@@ -263,7 +263,7 @@ let certificatePinning = DefaultCertificatePinning.certificatePinning(
 ```
 
 #### Custom Pinning Strategy
-```
+```swift
 let customPinning = DefaultCertificatePinning(
     strategy: .publicKey([publicKeyData]),
     allowSelfSignedCertificates: false
@@ -272,7 +272,7 @@ let customPinning = DefaultCertificatePinning(
 
 ### Data Models with @EMCodable
 
-```
+```swift
 @EMCodable
 struct LoginRequest {
     let email: String
@@ -300,7 +300,7 @@ struct CustomKeyExample {
 
 ### Custom Response Parser
 
-```
+```swift
 struct MyResponseParser: ServerResponseParser {
     func parse<T: Codable>(data: Data) throws -> ServerResponse<T> {
         let decoder = JSONDecoder()
@@ -337,7 +337,7 @@ struct MyResponseParser: ServerResponseParser {
 ### Advanced Configuration
 
 #### URL Session Configuration
-```
+```swift
 let configurator = EMConfigurator(
     urlSessionConfiguration: {
         let config = URLSessionConfiguration.default
@@ -354,7 +354,7 @@ let configurator = EMConfigurator(
 
 #### Header Filtering with IgnoreValue
 
-```
+```swift
 let headers = EMConfigurator.Header {
     var headers = [String: String]()
     headers["X-User-ID"] = currentUser?.id ?? IgnoreValue.ignore
@@ -378,7 +378,7 @@ let headers = EMConfigurator.Header {
 
 ## 🐛 Error Handling
 
-```
+```swift
 do {
     let result: APIResponse = try await networkManager.perform(
         route: MyAPI.Users.profile(userID: "123")
