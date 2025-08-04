@@ -15,7 +15,7 @@ enum AppAPI {
                      staging: "https://staging.tinytap.it/",
                      contentType: .formURLEncoded(spaceEncoding: .percentEscaped, allowedCharacters: .afURLQueryAllowed))) {
         
-        @RouteAPI("community/api/")
+        @Controller("community/api/")
         enum Community {
             @HTTP(.post, path: "login") case login(LoginReq)
         }
@@ -28,7 +28,7 @@ enum AppAPI {
                      staging: "https://staging.tinytap.it/",
                      contentType: .formURLEncoded(spaceEncoding: .percentEscaped, allowedCharacters: .afURLQueryAllowed))) {
         
-        @RouteAPI("account/api/")
+        @Controller("account/api/")
         enum Account {
             @HTTP(.get, path: "email_lookup") case emailLookup(dto: EmailLookupReq)
         }
@@ -38,12 +38,12 @@ enum AppAPI {
     
 //    #BaseURL("https://www.tinytap.com/") {
 //
-//        @RouteAPI("community/api/")
+//        @Controller("community/api/")
 //        enum Community {
 //            @HTTP(.post, path: "login") case login(LoginReq)
 //        }
 //
-//        @RouteAPI("account/api/")
+//        @Controller("account/api/")
 //        enum Account {
 //            @HTTP(.get, path: "email_lookup") case emailLookup(dto: EmailLookupReq)
 //            @HTTP(.get, path: "profile", .parameter("id"), "history") case profile(id: Int)
@@ -53,12 +53,12 @@ enum AppAPI {
 //
 //    #BaseURL("https://www.tinytap.com/") {
 //
-//        @RouteAPI("community/api/")
+//        @Controller("community/api/")
 //        enum Community {
 //            @HTTP(.post, path: "login") case login(LoginReq)
 //        }
 //
-//        @RouteAPI("account/api/")
+//        @Controller("account/api/")
 //        enum Account {
 //            @HTTP(.get, path: "email_lookup") case emailLookup(dto: EmailLookupReq)
 //            @HTTP(.get, path: "profile", .parameter("id"), "history") case profile(id: Int)
@@ -67,12 +67,12 @@ enum AppAPI {
 
 //    #BaseURL(BaseURL("https://www.tinytap.com/", staging: "https://www.staging.tinytap.com/")) {
 //
-//        @RouteAPI("community/api/")
+//        @Controller("community/api/")
 //        enum Community {
 //            @HTTP(.post, path: "login") case login(LoginReq)
 //        }
 //
-//        @RouteAPI("account/api/")
+//        @Controller("account/api/")
 //        enum Account {
 //            @HTTP(.get, path: "email_lookup") case emailLookup(dto: EmailLookupReq)
 //            @HTTP(.get, path: "profile", .parameter("id"), "history") case profile(id: Int)
@@ -81,12 +81,12 @@ enum AppAPI {
 
 //    #BaseURL(BaseURL(URL(string: "https://www.tinytap.com/")!)) {
 //
-//        @RouteAPI("community/api/")
+//        @Controller("community/api/")
 //        enum Community {
 //            @HTTP(.post, path: "login") case login(LoginReq)
 //        }
 //
-//        @RouteAPI("account/api/")
+//        @Controller("account/api/")
 //        enum Account {
 //            @HTTP(.get, path: "email_lookup") case emailLookup(dto: EmailLookupReq)
 //            @HTTP(.get, path: "profile", .parameter("id"), "history") case profile(id: Int)
@@ -95,19 +95,19 @@ enum AppAPI {
 
 //    #BaseURL(BaseURL("https://www.tinytap.com/", dev: "https://www.dev.tinytap.com/")) {
 //
-////        @RouteAPI("community/api/")
+////        @Controller("community/api/")
 ////        enum Community {
 ////            @HTTP(.post, path: "login") case login(LoginReq)
 ////        }
 //
-//        @RouteAPI("account/api/")
+//        @Controller("account/api/")
 //        enum Account {
 //            @HTTP(.get, path: "email_lookup") case emailLookup(dto: EmailLookupReq)
 //            @HTTP(.get, path: "profile", .parameter("id"), "history") case profile(id: Int)
 //        }
 //    }
     
-//    @RouteAPI("community/api/", baseURL: BaseURL("https://www.tinytap.com/", dev: "https://www.dev.tinytap.com/", contentType: .formURLEncoded(spaceEncoding: .percentEscaped, allowedCharacters: .afURLQueryAllowed)))
+//    @Controller("community/api/", baseURL: BaseURL("https://www.tinytap.com/", dev: "https://www.dev.tinytap.com/", contentType: .formURLEncoded(spaceEncoding: .percentEscaped, allowedCharacters: .afURLQueryAllowed)))
 //    enum Community {
 ////        @HTTP(.post, path: "login", isAuthRequired: true) case login(LoginReq, header: HeaderItems)
 //        @HTTP(.delete, path: "login", "erwefwed") case fsdfc(LoginReq)
@@ -120,13 +120,13 @@ enum AppAPI {
                      dev: "https://api-development.tinytap.it/api/v1/",
                      staging: "https://api.tinytap.it/api/v1/")) {
         
-        @RouteAPI("client-config/")
+        @Controller("client-config/")
         enum ClientConfig {
             @HTTP(.get, isAuthRequired: false)
             case getClientConfig
         }
         
-        @RouteAPI("accounts/")
+        @Controller("accounts/")
         enum Accounts {
             @HTTP(.post, path: "login/", isAuthRequired: false)
             case login(LoginReq)

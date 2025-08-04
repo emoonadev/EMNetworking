@@ -1,5 +1,5 @@
 //
-//  RouteAPI.swift
+//  Controller.swift
 //
 //
 //  Created by Mickael Belhassen on 01/08/2024.
@@ -11,7 +11,7 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
-public struct RouteAPI: ExtensionMacro, PeerMacro {
+public struct Controller: ExtensionMacro, PeerMacro {
 
     public static func expansion(of _: SwiftSyntax.AttributeSyntax, providingPeersOf _: some SwiftSyntax.DeclSyntaxProtocol, in _: some SwiftSyntaxMacros.MacroExpansionContext) throws -> [SwiftSyntax.DeclSyntax] {
         .init()
