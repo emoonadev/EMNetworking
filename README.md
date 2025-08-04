@@ -461,4 +461,3 @@ For questions or issues, please open an issue on GitHub.
 ---
 
 **EMNetworking** - Modern Swift networking made simple and secure. 🚀
-```
