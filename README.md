@@ -27,21 +27,12 @@ enum MyAPI {
             
             @HTTP(.post, path: "update")
             case updateProfile(UpdateProfileRequest)
-            
-            @HTTP(.get, path: "search")
-            case searchUsers(dto: SearchUsersRequest)
         }
         
         @RouteAPI("auth/")
         enum Auth {
             @HTTP(.post, path: "login", isAuthRequired: false)
             case login(LoginRequest)
-            
-            @HTTP(.post, path: "register", isAuthRequired: false)
-            case register(RegisterRequest)
-            
-            @HTTP(.post, path: "refresh", isAuthRequired: false)
-            case refreshToken(RefreshTokenRequest)
         }
     }
     
